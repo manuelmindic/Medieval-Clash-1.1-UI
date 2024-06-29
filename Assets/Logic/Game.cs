@@ -8,7 +8,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
+using UnityEngine.Networking;
+using System.IO;
 
 
 
@@ -26,6 +29,7 @@ public class Game : MonoBehaviour
     public User _placedCardUser;
 
     public TMP_Text _gameNameText;
+    public Transform[] cardSlots;
 
 
     public Game(string gameName, Player player, Bot bot)
@@ -42,10 +46,20 @@ public class Game : MonoBehaviour
         _deck.Shuffle();
         for (int i = 0; i < 5; i++)
         {
-            _player.UserDeck.Add(_deck.DrawCard());
+            Card drawnCard = _deck.DrawCard();
+            _player.UserDeck.Add(drawnCard);
+            UpdateImagesFromCardSlots(drawnCard.ImageFileName, _player.UserDeck.Count - 1);
+            cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(true);
             _bot.UserDeck.Add(_deck.DrawCard());
         }
         //PlayGame();
+    }
+
+    private void UpdateImagesFromCardSlots(string filename, int index)
+    {
+        Texture2D texture = Resources.Load<Texture2D>(filename);
+        RawImage image = cardSlots[index].GetComponent<RawImage>();
+        image.texture = texture;
     }
 
     public void PlayGame()
