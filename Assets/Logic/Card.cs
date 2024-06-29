@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class Card : MonoBehaviour
 {
-    private string _imageFileName;
-    private string _name;
-    private int _price;
-    private TypeOfCard _typeOfCard;
-    private int _damage;
-    private int _defense;
-    private int _manaCost;
+    public string _imageFileName;
+    public string _name;
+    public int _price;
+    public TypeOfCard _typeOfCard;
+    public int _damage;
+    public int _defense;
+    public int _manaCost;
 
     public Card(string imageFileName, string name, int price, TypeOfCard typeOfCard, int damage, int defense, int manaCost)
     {
