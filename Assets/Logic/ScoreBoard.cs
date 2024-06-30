@@ -1,41 +1,47 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 public class ScoreBoard : MonoBehaviour
 {
-
+    private Transform entryContainer;
+    private Transform entryTemplate;
     public TextAsset _jsontext;
+    public ReadJSON readJSON;
 
-    [System.Serializable]
-    public class Record
+    private void Awake()
     {
-        public string Name;
-        public string Rating;
-    }
+        readJSON.fillRecords(_jsontext);
+        entryContainer = transform.Find("scoreboardContainer");
+        entryTemplate = entryContainer.Find("scoreboardTemplate");
 
-    [System.Serializable]
-    public class RecordsList
-    {
-        public Record[] records;
-    }
+        entryTemplate.gameObject.SetActive(false);
 
-    public RecordsList myRecordList = new RecordsList();
+        float templateHeight = 20f;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        myRecordList = JsonUtility.FromJson<RecordsList>(_jsontext.text);
-    }
+        int index = 0;
+        int padding = 0;
+        foreach (var item in readJSON.myRecordList.records)
+        {
+            Transform entryTransform = Instantiate(entryTemplate, entryContainer);
+            RectTransform entryRectTransform = entryTransform.GetComponent<RectTransform>();
+            entryRectTransform.anchoredPosition = new Vector2(0, -templateHeight * index);
+            entryRectTransform.gameObject.SetActive(true);
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+            TextMeshProUGUI nameField = entryTransform.Find("NameField").GetComponent<TextMeshProUGUI>();
+            nameField.text = item.Name;
+            nameField.fontSize = 40;
+            nameField.margin = new Vector4(0, padding, 0, 0);
 
-    public RecordsList readJSON()
-    {
-        return myRecordList = JsonUtility.FromJson<RecordsList>(_jsontext.text);
+            TextMeshProUGUI ratingField = entryTransform.Find("RatingField").GetComponent<TextMeshProUGUI>();
+            ratingField.text = item.Rating.ToString();
+            ratingField.fontSize = 40;
+            ratingField.margin = new Vector4(0, padding, 0, 0);
+
+            padding += 30;
+            index++;
+        }
     }
 }
