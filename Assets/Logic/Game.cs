@@ -30,6 +30,7 @@ public class Game : MonoBehaviour
 
     public TMP_Text _gameNameText;
     public Transform[] cardSlots;
+    public Transform[] placedCardSlots;
 
 
     public Game(string gameName, Player player, Bot bot)
@@ -59,6 +60,13 @@ public class Game : MonoBehaviour
     {
         Texture2D texture = Resources.Load<Texture2D>(filename);
         RawImage image = cardSlots[index].GetComponent<RawImage>();
+        image.texture = texture;
+    }
+
+    private void UpdateImagesFromPlacedCardSlots(string filename, int index)
+    {
+        Texture2D texture = Resources.Load<Texture2D>(filename);
+        RawImage image = placedCardSlots[index].GetComponent<RawImage>();
         image.texture = texture;
     }
 
@@ -227,12 +235,42 @@ public class Game : MonoBehaviour
             user.Money = 0;
         }
 
-        Console.WriteLine();
-        Console.WriteLine(user.Name + " current stats are:");
-        Console.WriteLine("HP: " + user.HealthPoints);
-        Console.WriteLine("MP: " + user.ManaPoints);
-        Console.WriteLine("Money: " + user.Money);
-        Console.WriteLine();
+        Debug.Log(user.Name + " current stats are:");
+        Debug.Log("HP: " + user.HealthPoints);
+        Debug.Log("MP: " + user.ManaPoints);
+        Debug.Log("Money: " + user.Money);
+    }
+
+    public void printSelectedCard(int index)
+    {
+        Debug.Log(_player.UserDeck[index]);
+    }
+
+    public void pickSelectedCardForUser(int index)
+    {
+        List<Card> duplicatedList = _player.UserDeck;
+
+        Card selectedCard = _player.UserDeck[index];
+        Debug.Log(_player.UserDeck[index]);
+        _player.UserDeck.Remove(selectedCard);
+        UpdateImagesFromCardSlots("backcard", index);
+        //cardSlots[index].gameObject.SetActive(false);
+        UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
+        placedCardSlots[0].gameObject.SetActive(true);
+        UpdateCardSlots();
+
+        _placedCard = selectedCard;
+        _placedCardUser = _player;
+        
+    }
+
+    public void UpdateCardSlots()
+    {
+        cardSlots[_player.UserDeck.Count].gameObject.SetActive(false);
+        for (int i = 0; i < _player.UserDeck.Count; i++)
+        {
+            UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i);
+        }
     }
 
     public void LeaveGame()
