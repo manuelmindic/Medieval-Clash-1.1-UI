@@ -1,0 +1,36 @@
+{
+  "Users": [
+    {
+      "Name": "Anna",
+      "Rating": 500
+    },
+    {
+      "Name": "Manu",
+      "Rating": 1000
+    },
+    {
+      "Name": "Stefan",
+      "Rating": 1500
+    },
+    {
+      "Name": "Laura",
+      "Rating": 2000
+    },
+    {
+      "Name": "Mark",
+      "Rating": 2500
+    },
+    {
+      "Name": "Emma",
+      "Rating": 3000
+    },
+    {
+      "Name": "John",
+      "Rating": 3500
+    },
+    {
+      "Name": "Sophie",
+      "Rating": 4000
+    }
+  ]
+}
