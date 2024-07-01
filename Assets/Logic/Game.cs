@@ -17,6 +17,7 @@ using System.Collections;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine.Windows;
+using UnityEngine.SceneManagement;
 
 
 
@@ -42,6 +43,7 @@ public class Game : MonoBehaviour
     private bool hasUserPickedCard = false;
     public Button userStats;
     public Button botStats;
+    public Button backToStart;
 
 
     public Game(string gameName, Player player, Bot bot)
@@ -158,6 +160,9 @@ public class Game : MonoBehaviour
             hasUserPickedCard = false;
 
         }
+        wonOrLostText.gameObject.SetActive(true);
+        backToStart.gameObject.SetActive(true);
+        Debug.Log("HEEEEEEEYYYYYY");
         //yield return StartCoroutine(CheckIfUserHasPlacedCard());
     }
 
@@ -281,18 +286,24 @@ public class Game : MonoBehaviour
     {
         if (user1.HealthPoints <= 0)
         {
-            wonOrLostText.SetText(user2 + " won the game! You Lost!");
+            wonOrLostText.SetText(user2.Name + " won the game! You Lost!");
             _finished = true;
             return true;
         }
         if (user2.HealthPoints <= 0)
         {
-            wonOrLostText.SetText(user1 + " won the game! Congrats!");
+            wonOrLostText.SetText(user1.Name + " won the game! Congrats!");
             _finished = true;
             return true;
         }
         return false;
     }
+
+    public void BackToStart()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
+    }
+
 
     public Card getBotCard(User user, TypeOfCard typeOfCard)
     {
