@@ -1185,7 +1185,6 @@ GameObject:
   m_Component:
   - component: {fileID: 720241409}
   - component: {fileID: 720241411}
-  - component: {fileID: 720241410}
   m_Layer: 5
   m_Name: Music-Slider
   m_TagString: Untagged
@@ -1216,21 +1215,6 @@ RectTransform:
   m_AnchoredPosition: {x: 781, y: -456}
   m_SizeDelta: {x: 200, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &720241410
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 720241408}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c1af6b3a1fd0b1c4d8bfe3422df86a43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  volumeSlider: {fileID: 720241411}
-  sliderText: {fileID: 395568704}
-  audioSource: {fileID: 1214945579}
 --- !u!114 &720241411
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1282,7 +1266,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 720241410}
+      - m_Target: {fileID: 834046178}
         m_TargetAssemblyTypeName: VolumeSlider, Assembly-CSharp
         m_MethodName: ChangeVolume
         m_Mode: 1
@@ -1323,7 +1307,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10918846864e03c4284f6d6675195e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
 --- !u!4 &744632054
 Transform:
   m_ObjectHideFlags: 0
@@ -1351,6 +1334,7 @@ GameObject:
   - component: {fileID: 834046176}
   - component: {fileID: 834046175}
   - component: {fileID: 834046174}
+  - component: {fileID: 834046178}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -1443,6 +1427,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &834046178
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 834046173}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c1af6b3a1fd0b1c4d8bfe3422df86a43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeSlider: {fileID: 720241411}
+  sliderText: {fileID: 395568704}
+  audioSource: {fileID: 1214945579}
 --- !u!1 &1023544194
 GameObject:
   m_ObjectHideFlags: 0
@@ -1735,7 +1734,7 @@ GameObject:
   - component: {fileID: 1214945580}
   - component: {fileID: 1214945579}
   m_Layer: 0
-  m_Name: SoundObject
+  m_Name: Audio
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1755,7 +1754,7 @@ AudioSource:
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -2048,7 +2047,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10918846864e03c4284f6d6675195e1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _player: {fileID: 0}
 --- !u!1 &1521929719
 GameObject:
   m_ObjectHideFlags: 0

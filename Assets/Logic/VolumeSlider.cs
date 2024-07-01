@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class VolumeSlider : MonoBehaviour
@@ -10,8 +11,20 @@ public class VolumeSlider : MonoBehaviour
     [SerializeField] private Slider volumeSlider;
     [SerializeField] private TextMeshProUGUI sliderText;
     [SerializeField] private AudioSource audioSource;
+    /*  public static VolumeSlider instance;
 
+      void Awake()
+      {
+          if (instance != null)
+              Destroy(gameObject);
+          else
+          {
+              instance = this;
+              DontDestroyOnLoad(this.gameObject);
+          }
+      }*/
     private void Start()
+
     {
         if (!PlayerPrefs.HasKey("musicVolume"))
         {
@@ -19,11 +32,15 @@ public class VolumeSlider : MonoBehaviour
         }
         Load();
 
+        sliderText.text = (volumeSlider.value * 100).ToString("0");
+        audioSource.volume = volumeSlider.value;
+
         volumeSlider.onValueChanged.AddListener((v) => {
             sliderText.text = (v * 100).ToString("0");
             ChangeVolume();
         });
-        ChangeVolume();
+
+        //  ChangeVolume();
     }
 
     public void ChangeVolume()
@@ -40,5 +57,6 @@ public class VolumeSlider : MonoBehaviour
     private void Save()
     {
         PlayerPrefs.SetFloat("musicVolume", volumeSlider.value);
+        PlayerPrefs.Save();
     }
 }
