@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class User : MonoBehaviour
 {
     public string _name;
@@ -11,6 +10,7 @@ public class User : MonoBehaviour
     public int _manaPoints;
     public int _money;
     public List<Card> _userDeck;
+    
 
     public string Name { get => _name; set => _name = value; }
     public int Rating { get => _rating; set => _rating = value; }
@@ -36,4 +36,3 @@ public class User : MonoBehaviour
 
 }
 //ToDo: fragen wegen userinfo, was wollen wir da exactly?
-
