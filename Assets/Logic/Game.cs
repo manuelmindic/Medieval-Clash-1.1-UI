@@ -35,6 +35,7 @@ public class Game : MonoBehaviour
 
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
+    public TMP_Text wonOrLostText;
     public Transform[] cardSlots;
     public Transform[] placedCardSlots;
     public Button _submitButton;
@@ -280,13 +281,13 @@ public class Game : MonoBehaviour
     {
         if (user1.HealthPoints <= 0)
         {
-            Console.WriteLine(user2 + " won the game! Congrats!");
+            wonOrLostText.SetText(user2 + " won the game! You Lost!");
             _finished = true;
             return true;
         }
         if (user2.HealthPoints <= 0)
         {
-            Console.WriteLine(user1 + " won the game! Congrats!");
+            wonOrLostText.SetText(user1 + " won the game! Congrats!");
             _finished = true;
             return true;
         }
