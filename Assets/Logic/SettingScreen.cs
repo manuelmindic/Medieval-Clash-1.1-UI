@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SettingScreen : MonoBehaviour { 
     private string input;
+    //public Player _player;
 
 
     // Start is called before the first frame update
@@ -17,9 +18,10 @@ public class SettingScreen : MonoBehaviour {
     {
         
     }
-    public void ReadInput(string usernamme)
+    public void ReadInput(string username)
     {
-        input = usernamme;
+        input = username;
+        PlayerPrefs.SetString("Username", username);
         Debug.Log(input);
     }
 }

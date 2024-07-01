@@ -12,6 +12,10 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Networking;
 using System.IO;
+using System.Collections;
+using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
+using UnityEngine.Windows;
 
 
 
@@ -29,8 +33,13 @@ public class Game : MonoBehaviour
     public User _placedCardUser;
 
     public TMP_Text _gameNameText;
+    public TMP_Text _usernameText;
     public Transform[] cardSlots;
     public Transform[] placedCardSlots;
+    public Button _submitButton;
+    private bool hasUserPickedCard = false;
+    public Button userStats;
+    public Button botStats;
 
 
     public Game(string gameName, Player player, Bot bot)
@@ -43,7 +52,16 @@ public class Game : MonoBehaviour
 
     private void Start()
     {
+        StartCoroutine(StartGame());
+        //PlayGame();
+    }
+
+    IEnumerator StartGame()
+    {
+        UpdateUserStats();
+        _player.Name = PlayerPrefs.GetString("Username", "Player 1");
         _gameNameText.SetText(_gameName);
+        _usernameText.SetText(_player.Name);
         _deck.Shuffle();
         for (int i = 0; i < 5; i++)
         {
@@ -53,7 +71,102 @@ public class Game : MonoBehaviour
             cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(true);
             _bot.UserDeck.Add(_deck.DrawCard());
         }
-        //PlayGame();
+
+        while (!_finished)
+        {
+
+            yield return StartCoroutine(CheckIfUserHasPlacedCard());
+            int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
+            Debug.Log(_player.UserDeck[index]);
+            PlaceCard(_player, _player.UserDeck[index]);
+
+            yield return StartCoroutine(WaitSeconds(3f));
+            StopCoroutine(WaitSeconds(3f));
+
+            Card botCard = getBotCard(_bot, TypeOfCard.Defense);
+            UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
+            placedCardSlots[1].gameObject.SetActive(true);
+            PlaceCounter(_bot, botCard);
+            
+
+            yield return StartCoroutine(WaitSeconds(5f));
+            StopCoroutine(WaitSeconds(5f));
+
+            UpdateUserStats();
+            hasUserPickedCard = false;
+            if (checkIfWon(_player, _bot))
+                break;
+            StopCoroutine(CheckIfUserHasPlacedCard());
+
+            UpdateImagesFromPlacedCardSlots("backcard", 1);
+            placedCardSlots[0].gameObject.SetActive(false);
+            placedCardSlots[1].gameObject.SetActive(false);
+
+            _player.UserDeck.Add(_deck.DrawCard());
+            _bot.UserDeck.Add(_deck.DrawCard());
+
+            UpdateCardSlots();
+
+
+
+            //New Turn (BOT FIRST)
+            yield return StartCoroutine(WaitSeconds(3f));
+            StopCoroutine(WaitSeconds(3f));
+
+            botCard = getBotCard(_bot, TypeOfCard.Attack);
+            PlaceCard(_bot, botCard);
+            UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
+            placedCardSlots[1].gameObject.SetActive(true);
+            index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
+
+            yield return StartCoroutine(CheckIfUserHasPlacedCard());
+            PlaceCounter(_player, _player.UserDeck[index]);
+
+            yield return StartCoroutine(WaitSeconds(5f));
+            StopCoroutine(WaitSeconds(5f));
+
+            UpdateUserStats();
+
+            checkIfWon(_player, _bot);
+            StopCoroutine(CheckIfUserHasPlacedCard());
+
+            UpdateImagesFromPlacedCardSlots("backcard", 1);
+            placedCardSlots[0].gameObject.SetActive(false);
+            placedCardSlots[1].gameObject.SetActive(false);
+
+            _player.UserDeck.Add(_deck.DrawCard());
+            _bot.UserDeck.Add(_deck.DrawCard());
+
+            hasUserPickedCard = false;
+
+        }
+        //yield return StartCoroutine(CheckIfUserHasPlacedCard());
+
+
+
+        Debug.Log("Done!");
+    }
+
+    IEnumerator CheckIfUserHasPlacedCard()
+    {
+        yield return new WaitUntil(() => hasUserPickedCard == true);
+        Debug.Log("Placed Card!");
+    }
+
+    IEnumerator WaitSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        Debug.Log("Done!");
+    }
+
+    private void UpdateUserStats()
+    {
+        userStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _player.Name +
+            "\n" + "HP: " + _player.HealthPoints + "\n" + "MP: " + _player.ManaPoints +
+            "\n" + "GP: " + _player.Money + "\n";
+        botStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _bot.Name +
+            "\n" + "HP: " + _bot.HealthPoints + "\n" + "MP: " + _bot.ManaPoints +
+            "\n" + "GP: " + _bot.Money + "\n";
     }
 
     private void UpdateImagesFromCardSlots(string filename, int index)
@@ -252,16 +365,38 @@ public class Game : MonoBehaviour
 
         Card selectedCard = _player.UserDeck[index];
         Debug.Log(_player.UserDeck[index]);
-        _player.UserDeck.Remove(selectedCard);
-        UpdateImagesFromCardSlots("backcard", index);
+        //_player.UserDeck.Remove(selectedCard); This happens when submitted
+        //UpdateImagesFromCardSlots("backcard", index);
         //cardSlots[index].gameObject.SetActive(false);
         UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
         placedCardSlots[0].gameObject.SetActive(true);
         UpdateCardSlots();
+        _submitButton.gameObject.SetActive(true);
+        //Happens when submitted
+        cardSlots[index].gameObject.SetActive(false);
+        Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
+    }
+    public void HandleSubmitButtonClick()
+    {
+        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
+        Card selectedCard = _player.UserDeck[index];
+        cardSlots[index].gameObject.SetActive(true);
 
-        _placedCard = selectedCard;
-        _placedCardUser = _player;
-        
+        hasUserPickedCard = true;
+        _player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES 
+        //placedCardSlots[0].gameObject.SetActive(false);
+        _submitButton.gameObject.SetActive(false);
+        UpdateCardSlots();
+        //_placedCard = selectedCard;
+        //_placedCardUser = _player;
+    }
+
+    public void removeSelectedCardForUser()
+    {
+        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
+        placedCardSlots[0].gameObject.SetActive(false);
+        cardSlots[index].gameObject.SetActive(true);
+        _submitButton.gameObject.SetActive(false);
     }
 
     public void UpdateCardSlots()
@@ -270,6 +405,8 @@ public class Game : MonoBehaviour
         for (int i = 0; i < _player.UserDeck.Count; i++)
         {
             UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i);
+            if (i + 1 == _player.UserDeck.Count) 
+                cardSlots[i].gameObject.SetActive(true);
         }
     }
 
@@ -281,7 +418,7 @@ public class Game : MonoBehaviour
     public void PlaceCard(User user, Card card)
     {
         //TODO in input das man nur attack oder special setzen kann
-        user.UserDeck.Remove(card);
+        //user.UserDeck.Remove(card);
 
         if (_placedCard == null && _placedCardUser == null)
         {
@@ -339,6 +476,7 @@ public class Game : MonoBehaviour
 
     public Card SkipAttack()
     {
+        //Small warning when this happens, prob polish :)
         Card skipCard = new Card("Placeholder", "Skip", 0, TypeOfCard.Skip, 0, 0, 0);
 
         return skipCard;
