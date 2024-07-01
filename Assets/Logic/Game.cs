@@ -9,6 +9,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 using UnityEngine.Networking;
 using System.IO;
@@ -74,8 +75,10 @@ public class Game : MonoBehaviour
 
         while (!_finished)
         {
+            //DisableCardSlot(0);
             //Bug: Wenn man 7 Karten hat crashed es :(
             //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false); //BEEP
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
             Debug.Log("User card: " + _player.UserDeck[index]);
@@ -95,6 +98,7 @@ public class Game : MonoBehaviour
             yield return StartCoroutine(WaitSeconds(5f));
             StopCoroutine(WaitSeconds(5f));
 
+            ChangeAllCardSlotStates(true);
             UpdateUserStats();
             hasUserPickedCard = false;
             if (checkIfWon(_player, _bot))
@@ -109,6 +113,9 @@ public class Game : MonoBehaviour
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
 
+
+            ChangeAllCardSlotStates(true);
+            //ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true); //BEEP
             UpdateCardSlots();
 
 
@@ -379,6 +386,7 @@ public class Game : MonoBehaviour
         _submitButton.gameObject.SetActive(true);
         //Happens when submitted
         cardSlots[index].gameObject.SetActive(false);
+        ChangeAllCardSlotStates(false);
         Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
     }
     public void HandleSubmitButtonClick()
@@ -391,9 +399,60 @@ public class Game : MonoBehaviour
         //_player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES 
         //placedCardSlots[0].gameObject.SetActive(false);
         _submitButton.gameObject.SetActive(false);
+        //ChangeAllCardSlotStates(true);
         //UpdateCardSlots();
         //_placedCard = selectedCard;
         //_placedCardUser = _player;
+    }
+
+    private void ChangeCardSlotStates(List<int> indexes, bool isEnabled)
+    {
+        foreach (var index in indexes)
+        {
+            RawImage image = cardSlots[index].GetComponent<RawImage>();
+            EventTrigger eventTrigger = cardSlots[index].gameObject.GetComponent<EventTrigger>();
+            if (!isEnabled)
+            {
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                eventTrigger.enabled = false;
+            }
+            else
+            {
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                eventTrigger.enabled = true;
+            }
+        }    
+    }
+
+    private void ChangeAllCardSlotStates(bool isEnabled)
+    {
+        for (int i = 0; i < _player.UserDeck.Count; i++)
+        {
+            RawImage image = cardSlots[i].GetComponent<RawImage>();
+            EventTrigger eventTrigger = cardSlots[i].gameObject.GetComponent<EventTrigger>();
+            if (!isEnabled)
+            {
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                eventTrigger.enabled = false;
+            }
+            else
+            {
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                eventTrigger.enabled = true;
+            }
+        }
+    }
+
+    private List<int> GetIndexesForCardType(TypeOfCard typeOfCard)
+    {
+        List<int> result = new List<int>();
+        for (int i = 0; i < _player.UserDeck.Count; i++)
+        {
+            if (_player.UserDeck[i].TypeOfCard == typeOfCard)
+                result.Add(i);
+        }
+
+        return result;
     }
 
     public void removeSelectedCardForUser()
@@ -402,6 +461,22 @@ public class Game : MonoBehaviour
         placedCardSlots[0].gameObject.SetActive(false);
         cardSlots[index].gameObject.SetActive(true);
         _submitButton.gameObject.SetActive(false);
+
+        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+        }
+        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+        }
+        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+        }
+        //
     }
 
     public void UpdateCardSlots()
