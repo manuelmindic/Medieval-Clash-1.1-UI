@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ReadJSON : MonoBehaviour
@@ -26,6 +27,7 @@ public class ReadJSON : MonoBehaviour
     void Start()
     {
         myRecordList = JsonUtility.FromJson<RecordsList>(_jsontext.text);
+        myRecordList.records = myRecordList.records.OrderByDescending(record => record.Rating).ToArray();
     }
 
     // Update is called once per frame
@@ -37,5 +39,7 @@ public class ReadJSON : MonoBehaviour
     public void fillRecords(TextAsset jsontext)
     {
         myRecordList = JsonUtility.FromJson<RecordsList>(jsontext.text);
+        myRecordList.records = myRecordList.records.OrderByDescending(record => record.Rating).ToArray();
+
     }
 }

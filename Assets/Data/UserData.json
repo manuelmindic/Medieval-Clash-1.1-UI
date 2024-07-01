@@ -2,35 +2,83 @@
   "records": [
     {
       "Name": "Anna",
-      "Rating": 500
+      "Rating": 1379
     },
     {
       "Name": "Manu",
-      "Rating": 1000
+      "Rating": 1576
     },
     {
       "Name": "Stefan",
-      "Rating": 1500
+      "Rating": 2221
     },
     {
       "Name": "Laura",
-      "Rating": 2000
+      "Rating": 2654
     },
     {
       "Name": "Mark",
-      "Rating": 2500
+      "Rating": 2256
     },
     {
       "Name": "Emma",
-      "Rating": 3000
+      "Rating": 2888
     },
     {
       "Name": "John",
-      "Rating": 3500
+      "Rating": 1142
     },
     {
       "Name": "Sophie",
-      "Rating": 4000
+      "Rating": 2434
+    },
+    {
+      "Name": "Michael",
+      "Rating": 2903
+    },
+    {
+      "Name": "Sarah",
+      "Rating": 1754
+    },
+    {
+      "Name": "David",
+      "Rating": 1932
+    },
+    {
+      "Name": "Olivia",
+      "Rating": 2089
+    },
+    {
+      "Name": "James",
+      "Rating": 2991
+    },
+    {
+      "Name": "Isabella",
+      "Rating": 2523
+    },
+    {
+      "Name": "Daniel",
+      "Rating": 1497
+    },
+    {
+      "Name": "Mia",
+      "Rating": 2674
+    },
+    {
+      "Name": "Matthew",
+      "Rating": 2010
+    },
+    {
+      "Name": "Ella",
+      "Rating": 2135
+    },
+    {
+      "Name": "Joseph",
+      "Rating": 1839
+    },
+    {
+      "Name": "Emily",
+      "Rating": 2701
     }
   ]
 }
