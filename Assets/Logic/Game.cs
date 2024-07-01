@@ -58,8 +58,8 @@ public class Game : MonoBehaviour
 
     IEnumerator StartGame()
     {
-        UpdateUserStats();
         _player.Name = PlayerPrefs.GetString("Username", "Player 1");
+        UpdateUserStats();
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
         _deck.Shuffle();
@@ -74,16 +74,19 @@ public class Game : MonoBehaviour
 
         while (!_finished)
         {
-
+            //Bug: Wenn man 7 Karten hat crashed es :(
+            //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-            Debug.Log(_player.UserDeck[index]);
+            Debug.Log("User card: " + _player.UserDeck[index]);
             PlaceCard(_player, _player.UserDeck[index]);
+            UpdateCardSlots();
 
             yield return StartCoroutine(WaitSeconds(3f));
             StopCoroutine(WaitSeconds(3f));
 
             Card botCard = getBotCard(_bot, TypeOfCard.Defense);
+            Debug.Log("Bot Counter: " + botCard);
             UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             PlaceCounter(_bot, botCard);
@@ -98,6 +101,7 @@ public class Game : MonoBehaviour
                 break;
             StopCoroutine(CheckIfUserHasPlacedCard());
 
+            UpdateImagesFromPlacedCardSlots("backcard", 0);
             UpdateImagesFromPlacedCardSlots("backcard", 1);
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
@@ -114,13 +118,16 @@ public class Game : MonoBehaviour
             StopCoroutine(WaitSeconds(3f));
 
             botCard = getBotCard(_bot, TypeOfCard.Attack);
+            Debug.Log("Bot Card: " + botCard);
             PlaceCard(_bot, botCard);
             UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
 
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
+            Debug.Log("User Counter: " + _player.UserDeck[index]);
             PlaceCounter(_player, _player.UserDeck[index]);
+            UpdateCardSlots();
 
             yield return StartCoroutine(WaitSeconds(5f));
             StopCoroutine(WaitSeconds(5f));
@@ -131,20 +138,19 @@ public class Game : MonoBehaviour
             StopCoroutine(CheckIfUserHasPlacedCard());
 
             UpdateImagesFromPlacedCardSlots("backcard", 1);
+            UpdateImagesFromPlacedCardSlots("backcard", 0);
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
 
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
 
+            UpdateCardSlots();
+
             hasUserPickedCard = false;
 
         }
         //yield return StartCoroutine(CheckIfUserHasPlacedCard());
-
-
-
-        Debug.Log("Done!");
     }
 
     IEnumerator CheckIfUserHasPlacedCard()
@@ -156,7 +162,6 @@ public class Game : MonoBehaviour
     IEnumerator WaitSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-        Debug.Log("Done!");
     }
 
     private void UpdateUserStats()
@@ -364,7 +369,7 @@ public class Game : MonoBehaviour
         List<Card> duplicatedList = _player.UserDeck;
 
         Card selectedCard = _player.UserDeck[index];
-        Debug.Log(_player.UserDeck[index]);
+        //Debug.Log(_player.UserDeck[index]);
         //_player.UserDeck.Remove(selectedCard); This happens when submitted
         //UpdateImagesFromCardSlots("backcard", index);
         //cardSlots[index].gameObject.SetActive(false);
@@ -383,10 +388,10 @@ public class Game : MonoBehaviour
         cardSlots[index].gameObject.SetActive(true);
 
         hasUserPickedCard = true;
-        _player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES 
+        //_player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES 
         //placedCardSlots[0].gameObject.SetActive(false);
         _submitButton.gameObject.SetActive(false);
-        UpdateCardSlots();
+        //UpdateCardSlots();
         //_placedCard = selectedCard;
         //_placedCardUser = _player;
     }
@@ -418,7 +423,7 @@ public class Game : MonoBehaviour
     public void PlaceCard(User user, Card card)
     {
         //TODO in input das man nur attack oder special setzen kann
-        //user.UserDeck.Remove(card);
+        user.UserDeck.Remove(card);
 
         if (_placedCard == null && _placedCardUser == null)
         {
