@@ -45,6 +45,8 @@ public class Game : MonoBehaviour
     public Button botStats;
     public Button backToStart;
 
+    public ReadJSON readJSON;
+
 
     public Game(string gameName, Player player, Bot bot)
     {

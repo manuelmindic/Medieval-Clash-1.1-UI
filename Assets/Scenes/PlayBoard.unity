@@ -5990,6 +5990,53 @@ MonoBehaviour:
   - {fileID: 1033750490}
   - {fileID: 811356779}
   - {fileID: 360127633}
+--- !u!1 &1812805147
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1812805149}
+  - component: {fileID: 1812805148}
+  m_Layer: 0
+  m_Name: ReadJSON
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1812805148
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812805147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b098b8762d16ab4ba822d7437b7d90f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _jsontext: {fileID: 4900000, guid: c9eb1416c7e88b848a9d44fb23fee361, type: 3}
+  myRecordList:
+    records: []
+--- !u!4 &1812805149
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1812805147}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 539.6231, y: 310.6903, z: -0.0997325}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1895760796
 GameObject:
   m_ObjectHideFlags: 0
@@ -6156,6 +6203,7 @@ MonoBehaviour:
   userStats: {fileID: 1583599064}
   botStats: {fileID: 1469099237}
   backToStart: {fileID: 1152685428}
+  readJSON: {fileID: 1812805148}
 --- !u!1 &1931060997
 GameObject:
   m_ObjectHideFlags: 0
@@ -6896,3 +6944,4 @@ SceneRoots:
   - {fileID: 1915897328}
   - {fileID: 1431135900}
   - {fileID: 199575697}
+  - {fileID: 1812805149}
