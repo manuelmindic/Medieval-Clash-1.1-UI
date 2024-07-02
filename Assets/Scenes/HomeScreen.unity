@@ -398,7 +398,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 122885252}
-  - component: {fileID: 122885251}
   m_Layer: 5
   m_Name: InformationBoard
   m_TagString: Untagged
@@ -406,18 +405,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 0
---- !u!114 &122885251
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 122885250}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14353b50c2763e842ac63a7350be9a27, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!224 &122885252
 RectTransform:
   m_ObjectHideFlags: 0
@@ -632,7 +619,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 230605079}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 14353b50c2763e842ac63a7350be9a27, type: 3}
+  m_Script: {fileID: 11500000, guid: ad51a7d0d04fff14e911babd9b81a904, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &368520504
