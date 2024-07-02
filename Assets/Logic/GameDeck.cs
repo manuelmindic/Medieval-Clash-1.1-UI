@@ -6,8 +6,8 @@ using UnityEngine;
 
 public class GameDeck : MonoBehaviour
 {
-    private static int _deckNumber;
-    private List<Card> _deck;
+    public static int _deckNumber;
+    public List<Card> _deck;
 
     public GameDeck(List<Card> deck)
     {
@@ -35,6 +35,13 @@ public class GameDeck : MonoBehaviour
         _deck.RemoveAt(0);
 
         return drawnCard;
+    }
+
+    public void HandleDrawCardButton()
+    {
+        Card drawnCard = DrawCard();
+        //Do Something with the card here (Assign to player deck etc)
+        Debug.Log(drawnCard);
     }
 
     public void Shuffle()
