@@ -1474,9 +1474,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1915897329}
+      - m_Target: {fileID: 431428019}
         m_TargetAssemblyTypeName: Game, Assembly-CSharp
-        m_MethodName: HandleSkipButtonClick
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1553,21 +1553,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9591a1e876309c2468fe375e53d982bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameName: 
-  _player: {fileID: 0}
-  _bot: {fileID: 0}
-  _gameNameText: {fileID: 0}
-  _usernameText: {fileID: 0}
-  wonOrLostText: {fileID: 0}
-  cardSlots: []
-  placedCardSlots: []
-  _submitButton: {fileID: 0}
-  _skipButton: {fileID: 0}
-  _discardButton: {fileID: 0}
-  userStats: {fileID: 0}
-  botStats: {fileID: 0}
-  backToStart: {fileID: 0}
-  readJSON: {fileID: 0}
+  _gameName: Test Game
+  _player: {fileID: 1996186397}
+  _bot: {fileID: 359881274}
+  _gameNameText: {fileID: 444800211}
+  _usernameText: {fileID: 2072905577}
+  wonOrLostText: {fileID: 1781997067}
+  cardSlots:
+  - {fileID: 883137818}
+  - {fileID: 1349948057}
+  - {fileID: 1494667431}
+  - {fileID: 1363153840}
+  - {fileID: 1666251820}
+  - {fileID: 1273516077}
+  - {fileID: 904374071}
+  placedCardSlots:
+  - {fileID: 875428407}
+  - {fileID: 658959935}
+  _submitButton: {fileID: 1712331389}
+  _skipButton: {fileID: 392470062}
+  _discardButton: {fileID: 579467691}
+  userStats: {fileID: 1583599064}
+  botStats: {fileID: 1469099237}
+  backToStart: {fileID: 1152685428}
+  readJSON: {fileID: 1812805148}
 --- !u!4 &431428021
 Transform:
   m_ObjectHideFlags: 0
@@ -1800,8 +1809,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1915897329}
-        m_TargetAssemblyTypeName: Game, Assembly-CSharp
+      - m_Target: {fileID: 431428020}
+        m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
         m_MethodName: HandleDiscardButtonClick
         m_Mode: 1
         m_Arguments:
@@ -2682,8 +2691,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: removeSelectedCardForUser
           m_Mode: 1
           m_Arguments:
@@ -2830,8 +2839,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -2978,8 +2987,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -4318,8 +4327,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -4900,8 +4909,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -5048,8 +5057,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -5496,8 +5505,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -6184,8 +6193,8 @@ MonoBehaviour:
     callback:
       m_PersistentCalls:
         m_Calls:
-        - m_Target: {fileID: 1915897329}
-          m_TargetAssemblyTypeName: Game, Assembly-CSharp
+        - m_Target: {fileID: 431428020}
+          m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
           m_MethodName: pickSelectedCardForUser
           m_Mode: 3
           m_Arguments:
@@ -6316,8 +6325,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1915897329}
-        m_TargetAssemblyTypeName: Game, Assembly-CSharp
+      - m_Target: {fileID: 431428020}
+        m_TargetAssemblyTypeName: UIUpdater, Assembly-CSharp
         m_MethodName: HandleSubmitButtonClick
         m_Mode: 1
         m_Arguments:
@@ -6864,6 +6873,7 @@ MonoBehaviour:
   userStats: {fileID: 1583599064}
   botStats: {fileID: 1469099237}
   backToStart: {fileID: 1152685428}
+  _uiUpdater: {fileID: 431428020}
   readJSON: {fileID: 1812805148}
 --- !u!1 &1931060997
 GameObject:

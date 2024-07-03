@@ -20,8 +20,6 @@ using UnityEngine.Windows;
 using UnityEngine.SceneManagement;
 
 
-
-
 public class Game : MonoBehaviour
 {
     public string _gameName;
@@ -49,6 +47,8 @@ public class Game : MonoBehaviour
     public Button botStats;
     public Button backToStart;
 
+
+    public UIUpdater _uiUpdater;
     public ReadJSON readJSON;
 
 
@@ -69,7 +69,7 @@ public class Game : MonoBehaviour
     IEnumerator StartGame()
     {
         _player.Name = PlayerPrefs.GetString("Username", "Player 1");
-        UpdateUserStats();
+        _uiUpdater.UpdateUserStats();
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
         _deck.Shuffle();
@@ -77,7 +77,7 @@ public class Game : MonoBehaviour
         {
             Card drawnCard = _deck.DrawCard();
             _player.UserDeck.Add(drawnCard);
-            UpdateImagesFromCardSlots(drawnCard.ImageFileName, _player.UserDeck.Count - 1);
+            _uiUpdater.UpdateImagesFromCardSlots(drawnCard.ImageFileName, _player.UserDeck.Count - 1);
             cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(true);
             _bot.UserDeck.Add(_deck.DrawCard());
         }
@@ -87,19 +87,19 @@ public class Game : MonoBehaviour
             //DisableCardSlot(0);
             //Bug: Wenn man 7 Karten hat crashed es :(
             //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false); //BEEP
+            _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Defense), false); //BEEP
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
             Debug.Log("User card: " + _player.UserDeck[index]);
             PlaceCard(_player, _player.UserDeck[index]);
-            UpdateCardSlots();
+            _uiUpdater.UpdateCardSlots();
 
             yield return StartCoroutine(WaitSeconds(3f));
             StopCoroutine(WaitSeconds(3f));
 
             Card botCard = getBotCard(_bot, TypeOfCard.Defense);
             Debug.Log("Bot Counter: " + botCard);
-            UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             PlaceCounter(_bot, botCard);
             
@@ -107,15 +107,15 @@ public class Game : MonoBehaviour
             yield return StartCoroutine(WaitSeconds(5f));
             StopCoroutine(WaitSeconds(5f));
 
-            ChangeAllCardSlotStates(true);
-            UpdateUserStats();
+            _uiUpdater.ChangeAllCardSlotStates(true);
+            _uiUpdater.UpdateUserStats();
             hasUserPickedCard = false;
             if (checkIfWon(_player, _bot))
                 break;
             StopCoroutine(CheckIfUserHasPlacedCard());
 
-            UpdateImagesFromPlacedCardSlots("backcard", 0);
-            UpdateImagesFromPlacedCardSlots("backcard", 1);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots("backcard", 0);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots("backcard", 1);
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
 
@@ -123,9 +123,9 @@ public class Game : MonoBehaviour
             _bot.UserDeck.Add(_deck.DrawCard());
 
 
-            ChangeAllCardSlotStates(false);
+            _uiUpdater.ChangeAllCardSlotStates(false);
             //ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true); //BEEP
-            UpdateCardSlots();
+            _uiUpdater.UpdateCardSlots();
 
 
 
@@ -137,39 +137,39 @@ public class Game : MonoBehaviour
             botCard = getBotCard(_bot, TypeOfCard.Attack);
             Debug.Log("Bot Card: " + botCard);
             PlaceCard(_bot, botCard);
-            UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
-            ChangeAllCardSlotStates(true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
+            _uiUpdater.ChangeAllCardSlotStates(true);
+            _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Attack), false);
+            _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Special), false);
             //index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
 
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
             Debug.Log("User Counter: " + _player.UserDeck[index]);
             PlaceCounter(_player, _player.UserDeck[index]);
-            UpdateCardSlots();
+            _uiUpdater.UpdateCardSlots();
 
             yield return StartCoroutine(WaitSeconds(5f));
             StopCoroutine(WaitSeconds(5f));
 
 
-            ChangeAllCardSlotStates(true);
-            UpdateUserStats();
+            _uiUpdater.ChangeAllCardSlotStates(true);
+            _uiUpdater.UpdateUserStats();
 
             checkIfWon(_player, _bot);
             StopCoroutine(CheckIfUserHasPlacedCard());
 
-            UpdateImagesFromPlacedCardSlots("backcard", 1);
-            UpdateImagesFromPlacedCardSlots("backcard", 0);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots("backcard", 1);
+            _uiUpdater.UpdateImagesFromPlacedCardSlots("backcard", 0);
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
 
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
 
-            ChangeAllCardSlotStates(true);
-            UpdateCardSlots();
+            _uiUpdater.ChangeAllCardSlotStates(true);
+            _uiUpdater.UpdateCardSlots();
 
             hasUserPickedCard = false;
 
@@ -189,30 +189,6 @@ public class Game : MonoBehaviour
     IEnumerator WaitSeconds(float seconds)
     {
         yield return new WaitForSeconds(seconds);
-    }
-
-    private void UpdateUserStats()
-    {
-        userStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _player.Name +
-            "\n" + "HP: " + _player.HealthPoints + "\n" + "MP: " + _player.ManaPoints +
-            "\n" + "GP: " + _player.Money + "\n";
-        botStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _bot.Name +
-            "\n" + "HP: " + _bot.HealthPoints + "\n" + "MP: " + _bot.ManaPoints +
-            "\n" + "GP: " + _bot.Money + "\n";
-    }
-
-    private void UpdateImagesFromCardSlots(string filename, int index)
-    {
-        Texture2D texture = Resources.Load<Texture2D>(filename);
-        RawImage image = cardSlots[index].GetComponent<RawImage>();
-        image.texture = texture;
-    }
-
-    private void UpdateImagesFromPlacedCardSlots(string filename, int index)
-    {
-        Texture2D texture = Resources.Load<Texture2D>(filename);
-        RawImage image = placedCardSlots[index].GetComponent<RawImage>();
-        image.texture = texture;
     }
 
     public void PlayGame()
@@ -397,196 +373,6 @@ public class Game : MonoBehaviour
         Debug.Log(_player.UserDeck[index]);
     }
 
-    public void pickSelectedCardForUser(int index)
-    {
-        List<Card> duplicatedList = _player.UserDeck;
-
-        Card selectedCard = _player.UserDeck[index];
-        //Debug.Log(_player.UserDeck[index]);
-        //_player.UserDeck.Remove(selectedCard); This happens when submitted
-        //UpdateImagesFromCardSlots("backcard", index);
-        //cardSlots[index].gameObject.SetActive(false);
-        UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
-        placedCardSlots[0].gameObject.SetActive(true);
-        UpdateCardSlots();
-        _submitButton.gameObject.SetActive(true);
-        //_skipButton.gameObject.SetActive(true);
-        _discardButton.gameObject.SetActive(true);
-        //Happens when submitted
-        cardSlots[index].gameObject.SetActive(false);
-        ChangeAllCardSlotStates(false);
-        Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
-    }
-    public void HandleSubmitButtonClick()
-    {
-        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-        Card selectedCard = _player.UserDeck[index];
-        cardSlots[index].gameObject.SetActive(true);
-
-        hasUserPickedCard = true;
-        //_player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES //EDIT2: NEIN WIR BRAUCHEN ES DOCH NICHT
-        //placedCardSlots[0].gameObject.SetActive(false);
-        _submitButton.gameObject.SetActive(false);
-        //_skipButton.gameObject.SetActive(false);
-        _discardButton.gameObject.SetActive(false);
-        //ChangeAllCardSlotStates(true);
-        //UpdateCardSlots();
-        //_placedCard = selectedCard;
-        //_placedCardUser = _player;
-    }
-
-    public void HandleSkipButtonClick()
-    {
-        //dont update cardslots
-    }
-
-    public void HandleDiscardButtonClick()
-    {
-        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-        Card card = _player.UserDeck[index];
-        /*if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
-        }*/
-
-        _player.UserDeck.RemoveAt(index);
-        //cardSlots[index].gameObject.SetActive(true);
-        UpdateImagesFromPlacedCardSlots("backcard", 0);
-        placedCardSlots[0].gameObject.SetActive(false);
-        _submitButton.gameObject.SetActive(false);
-        _discardButton.gameObject.SetActive(false);
-
-        
-
-        if (card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
-        }
-
-        if (card.TypeOfCard == TypeOfCard.Defense)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
-        }
-
-        UpdateCardSlots();
-
-        //Update cardslots
-    }
-
-    private void ChangeCardSlotStates(List<int> indexes, bool isEnabled)
-    {
-        foreach (var index in indexes)
-        {
-            RawImage image = cardSlots[index].GetComponent<RawImage>();
-            EventTrigger eventTrigger = cardSlots[index].gameObject.GetComponent<EventTrigger>();
-            if (!isEnabled)
-            {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
-                eventTrigger.enabled = false;
-            }
-            else
-            {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
-                eventTrigger.enabled = true;
-            }
-        }    
-    }
-
-    private void ChangeAllCardSlotStates(bool isEnabled)
-    {
-        for (int i = 0; i < _player.UserDeck.Count; i++)
-        {
-            RawImage image = cardSlots[i].GetComponent<RawImage>();
-            EventTrigger eventTrigger = cardSlots[i].gameObject.GetComponent<EventTrigger>();
-            if (!isEnabled)
-            {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
-                eventTrigger.enabled = false;
-            }
-            else
-            {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
-                eventTrigger.enabled = true;
-            }
-        }
-    }
-
-    private List<int> GetIndexesForCardType(TypeOfCard typeOfCard)
-    {
-        List<int> result = new List<int>();
-        for (int i = 0; i < _player.UserDeck.Count; i++)
-        {
-            if (_player.UserDeck[i].TypeOfCard == typeOfCard)
-                result.Add(i);
-        }
-
-        return result;
-    }
-
-    public void removeSelectedCardForUser()
-    {
-        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-        placedCardSlots[0].gameObject.SetActive(false);
-        cardSlots[index].gameObject.SetActive(true);
-        _submitButton.gameObject.SetActive(false);
-        //_skipButton.gameObject.SetActive(false);
-        _discardButton.gameObject.SetActive(false);
-
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
-        }
-        //
-    }
-
-    public void UpdateCardSlots()
-    {
-        //SCUFFED LÖSUNG :SOB:
-        if (_player.UserDeck.Count == 7)
-        {
-            cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(false);
-        }
-        else
-        {
-            cardSlots[_player.UserDeck.Count].gameObject.SetActive(false);
-        }
-        
-        for (int i = 0; i < _player.UserDeck.Count; i++)
-        {
-            UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i);
-            //if (i + 1 == _player.UserDeck.Count) 
-                cardSlots[i].gameObject.SetActive(true);
-        }
-    }
-
-    public void LeaveGame()
-    {
-
-    }
 
     public void PlaceCard(User user, Card card)
     {
