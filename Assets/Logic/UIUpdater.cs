@@ -15,7 +15,7 @@ public class UIUpdater : MonoBehaviour
 
     public Player _player;
     public Bot _bot;
-
+    public Image botImage;
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
     public TMP_Text wonOrLostText;
@@ -32,6 +32,12 @@ public class UIUpdater : MonoBehaviour
     public ReadJSON readJSON;
 
 
+    public void BotImage(string filename)
+    {
+        Sprite texture = Resources.Load<Sprite>(filename);
+        Image image = botImage.GetComponent<Image>();
+        image.sprite = texture;
+    }
     public void UpdateUserStats()
     {
         userStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _player.Name +

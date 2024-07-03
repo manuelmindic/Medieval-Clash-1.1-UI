@@ -95,16 +95,23 @@ public class Game : MonoBehaviour
             Debug.Log("User card: " + _player.UserDeck[index]);
             PlaceCard(_player, _player.UserDeck[index]);
             _uiUpdater.UpdateCardSlots();
+            _uiUpdater.BotImage("AngryBot");
 
-            yield return StartCoroutine(WaitSeconds(3f));
-            StopCoroutine(WaitSeconds(3f));
+            yield return StartCoroutine(WaitSeconds(2f));
+            StopCoroutine(WaitSeconds(2f));
+
+            _uiUpdater.BotImage("ThinkingBot");
+
+            yield return StartCoroutine(WaitSeconds(2f));
+            StopCoroutine(WaitSeconds(2f));
 
             Card botCard = getBotCard(_bot, TypeOfCard.Defense);
             Debug.Log("Bot Counter: " + botCard);
             _uiUpdater.UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             PlaceCounter(_bot, botCard);
-            
+
+            _uiUpdater.BotImage("DefaultBot");
 
             yield return StartCoroutine(WaitSeconds(5f));
             StopCoroutine(WaitSeconds(5f));
@@ -130,7 +137,7 @@ public class Game : MonoBehaviour
             //ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true); //BEEP
             _uiUpdater.UpdateCardSlots();
 
-
+            _uiUpdater.BotImage("ThinkingBot");
 
             //New Turn (BOT FIRST)
             yield return StartCoroutine(WaitSeconds(3f));
@@ -140,6 +147,9 @@ public class Game : MonoBehaviour
             botCard = getBotCard(_bot, TypeOfCard.Attack);
             Debug.Log("Bot Card: " + botCard);
             PlaceCard(_bot, botCard);
+
+            _uiUpdater.BotImage("DefaultBot");
+
             _uiUpdater.UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             _uiUpdater.ChangeAllCardSlotStates(true);
@@ -283,6 +293,7 @@ public class Game : MonoBehaviour
     {
         if (user1.HealthPoints <= 0)
         {
+            _uiUpdater.BotImage("WinBot");
             wonOrLostText.SetText(user2.Name + " won the game! You Lost!");
             user1.Rating -= 25; //User Lost
             readJSON.UpdateRecord(user1.Name, -25);
@@ -291,6 +302,7 @@ public class Game : MonoBehaviour
         }
         if (user2.HealthPoints <= 0)
         {
+            _uiUpdater.BotImage("DefeatedBot");
             wonOrLostText.SetText(user1.Name + " won the game! Congrats!");
             user1.Rating += 25; //User Won
             readJSON.UpdateRecord(user1.Name, 25);
