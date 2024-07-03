@@ -19,6 +19,7 @@ public class UIUpdater : MonoBehaviour
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
     public TMP_Text wonOrLostText;
+    public TMP_Text _turnText;
     public Transform[] cardSlots;
     public Transform[] placedCardSlots;
     public Button _submitButton;
@@ -38,6 +39,11 @@ public class UIUpdater : MonoBehaviour
         Image image = botImage.GetComponent<Image>();
         image.sprite = texture;
     }
+    public void SetTurnText(int turn)
+    {
+        _turnText.SetText("Turn: " + turn);
+    }
+
     public void UpdateUserStats()
     {
         userStats.GetComponentInChildren<TMP_Text>().text = "Name: " + _player.Name +

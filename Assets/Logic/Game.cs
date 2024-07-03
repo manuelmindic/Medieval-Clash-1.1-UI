@@ -52,7 +52,6 @@ public class Game : MonoBehaviour
     public UIUpdater _uiUpdater;
     public ReadJSON readJSON;
 
-
     public Game(string gameName, Player player, Bot bot)
     {
         _gameName = gameName;
@@ -69,11 +68,13 @@ public class Game : MonoBehaviour
 
     IEnumerator StartGame()
     {
+        int turn = 1;
         _player.Name = PlayerPrefs.GetString("Username", "Player 1");
         userStatsLogic(_player);
         _uiUpdater.UpdateUserStats();
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
+        _uiUpdater.SetTurnText(turn);
         _deck.Shuffle();
         for (int i = 0; i < 5; i++)
         {
@@ -132,6 +133,9 @@ public class Game : MonoBehaviour
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
 
+            turn++;
+            _uiUpdater.SetTurnText(turn);
+
 
             _uiUpdater.ChangeAllCardSlotStates(false);
             //ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true); //BEEP
@@ -182,11 +186,13 @@ public class Game : MonoBehaviour
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
 
+            turn++;
+            _uiUpdater.SetTurnText(turn);
+
             _uiUpdater.ChangeAllCardSlotStates(true);
             _uiUpdater.UpdateCardSlots();
 
             hasUserPickedCard = false;
-
         }
         wonOrLostText.gameObject.SetActive(true);
         backToStart.gameObject.SetActive(true);
