@@ -1524,6 +1524,65 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 392470060}
   m_CullTransparentMesh: 1
+--- !u!1 &431428019
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 431428021}
+  - component: {fileID: 431428020}
+  m_Layer: 0
+  m_Name: UIUpdater
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &431428020
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431428019}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9591a1e876309c2468fe375e53d982bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gameName: 
+  _player: {fileID: 0}
+  _bot: {fileID: 0}
+  _gameNameText: {fileID: 0}
+  _usernameText: {fileID: 0}
+  wonOrLostText: {fileID: 0}
+  cardSlots: []
+  placedCardSlots: []
+  _submitButton: {fileID: 0}
+  _skipButton: {fileID: 0}
+  _discardButton: {fileID: 0}
+  userStats: {fileID: 0}
+  botStats: {fileID: 0}
+  backToStart: {fileID: 0}
+  readJSON: {fileID: 0}
+--- !u!4 &431428021
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 431428019}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 547.149, y: 286.207, z: -0.08265276}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &444800209
 GameObject:
   m_ObjectHideFlags: 0
@@ -4271,6 +4330,57 @@ MonoBehaviour:
             m_StringArgument: 
             m_BoolArgument: 0
           m_CallState: 2
+--- !u!1 &1280192548
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1280192550}
+  - component: {fileID: 1280192549}
+  m_Layer: 0
+  m_Name: SkipCard
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1280192549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280192548}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59bb08e397b060d489698dc6860fd8be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _imageFileName: backcard
+  _name: Skip
+  _price: 0
+  _typeOfCard: 3
+  _damage: 0
+  _defense: 0
+  _manaCost: 0
+--- !u!4 &1280192550
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280192548}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 547.149, y: 286.207, z: -0.08265276}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1293689190
 GameObject:
   m_ObjectHideFlags: 0
@@ -6733,6 +6843,7 @@ MonoBehaviour:
   _bot: {fileID: 359881274}
   _placedCard: {fileID: 0}
   _placedCardUser: {fileID: 0}
+  _skipCard: {fileID: 1280192549}
   _gameNameText: {fileID: 444800211}
   _usernameText: {fileID: 2072905577}
   wonOrLostText: {fileID: 1781997067}
@@ -7495,3 +7606,5 @@ SceneRoots:
   - {fileID: 1431135900}
   - {fileID: 199575697}
   - {fileID: 1812805149}
+  - {fileID: 1280192550}
+  - {fileID: 431428021}

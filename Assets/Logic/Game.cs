@@ -34,6 +34,8 @@ public class Game : MonoBehaviour
     public Card _placedCard;
     public User _placedCardUser;
 
+    public Card _skipCard;
+
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
     public TMP_Text wonOrLostText;
@@ -42,7 +44,7 @@ public class Game : MonoBehaviour
     public Button _submitButton;
     public Button _skipButton;
     public Button _discardButton;
-    private bool hasUserPickedCard = false;
+    public static bool hasUserPickedCard = false;
     public Button userStats;
     public Button botStats;
     public Button backToStart;
@@ -71,7 +73,7 @@ public class Game : MonoBehaviour
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
         _deck.Shuffle();
-        for (int i = 0; i < 7; i++)
+        for (int i = 0; i < 5; i++)
         {
             Card drawnCard = _deck.DrawCard();
             _player.UserDeck.Add(drawnCard);
@@ -441,13 +443,47 @@ public class Game : MonoBehaviour
     public void HandleDiscardButtonClick()
     {
         int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
+        Card card = _player.UserDeck[index];
+        /*if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+        }
+        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+        }
+        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+        }*/
+
         _player.UserDeck.RemoveAt(index);
-        cardSlots[index].gameObject.SetActive(true);
+        //cardSlots[index].gameObject.SetActive(true);
         UpdateImagesFromPlacedCardSlots("backcard", 0);
-        placedCardSlots[0].gameObject.SetActive(true);
+        placedCardSlots[0].gameObject.SetActive(false);
         _submitButton.gameObject.SetActive(false);
         _discardButton.gameObject.SetActive(false);
+
+        
+
+        if (card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
+        }
+
+        if (card.TypeOfCard == TypeOfCard.Defense)
+        {
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+        }
+
         UpdateCardSlots();
+
         //Update cardslots
     }
 
@@ -542,7 +578,7 @@ public class Game : MonoBehaviour
         for (int i = 0; i < _player.UserDeck.Count; i++)
         {
             UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i);
-            if (i + 1 == _player.UserDeck.Count) 
+            //if (i + 1 == _player.UserDeck.Count) 
                 cardSlots[i].gameObject.SetActive(true);
         }
     }
