@@ -99,6 +99,10 @@
         {
             "Name": "Kevin",
             "Rating": 1000
+        },
+        {
+            "Name": "minz",
+            "Rating": 1025
         }
     ]
 }

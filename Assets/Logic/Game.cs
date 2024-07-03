@@ -87,6 +87,7 @@ public class Game : MonoBehaviour
 
         while (!_finished)
         {
+            printDef(_bot);
             //DisableCardSlot(0);
             //Bug: Wenn man 7 Karten hat crashed es :(
             //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
@@ -144,6 +145,7 @@ public class Game : MonoBehaviour
             _uiUpdater.BotImage("ThinkingBot");
 
             //New Turn (BOT FIRST)
+            printDef(_bot);
             yield return StartCoroutine(WaitSeconds(3f));
             StopCoroutine(WaitSeconds(3f));
             
@@ -323,37 +325,81 @@ public class Game : MonoBehaviour
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex - 1);
     }
 
+    public void printDef(User user)
+    {
+        foreach (var item in user.UserDeck)
+        {
+            Debug.Log(item.Defense);
+        }
+    }
 
     public Card getBotCard(User user, TypeOfCard typeOfCard)
     {
-        Card pickedCard;
+        Card _botcard = null;
         if (typeOfCard.Equals(TypeOfCard.Attack) && !user.UserDeck.Any(c => c.TypeOfCard == typeOfCard)
             && !user.UserDeck.Any(c => c.TypeOfCard == TypeOfCard.Sell)
             && !user.UserDeck.Any(c => c.TypeOfCard == TypeOfCard.Special)
             && !user.UserDeck.Any(c => c.TypeOfCard == TypeOfCard.Buy))
         {
-            Console.WriteLine("Manu skipped Attack");
-            pickedCard = SkipAttack();
-            return pickedCard;
+            Console.WriteLine("Bot skipped Attack");
+            _botcard = SkipAttack();
+            return _botcard;
         }
         if (typeOfCard.Equals(TypeOfCard.Defense) && !user.UserDeck.Any(c => c.TypeOfCard == typeOfCard))
         {
-            Console.WriteLine("Manu mein decko skipped defense");
-            pickedCard = SkipAttack();
-            return pickedCard;
-        }
-        if (typeOfCard.Equals(TypeOfCard.Attack))
-        {
-            pickedCard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Attack) || item.TypeOfCard.Equals(TypeOfCard.Special)).First();
-            Console.WriteLine(pickedCard);
-            return pickedCard;
+            Console.WriteLine("Bot skipped Defense");
+            _botcard = SkipAttack();
+            return _botcard;
         }
 
-        // check if bot has this typeOfCard in Deck!!! -> !NullPointerException
-        // boolean as skip to not play turn and draw a card
-        pickedCard = user.UserDeck.Where(item => item.TypeOfCard.Equals(typeOfCard)).First();
-        Console.WriteLine(pickedCard);
-        return pickedCard;
+        // Die Manu´sche Formel
+        if (typeOfCard.Equals(TypeOfCard.Defense))
+        {
+            double _dmg = _placedCard.Damage;
+            _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(typeOfCard)).First();
+            double _def = _botcard.Defense;
+            double _koef = _dmg / _def;
+
+            foreach (var item in user.UserDeck.Where(item => item.TypeOfCard.Equals(typeOfCard)))
+            {
+                Card _botcardTemp = item;
+                double _defTemp = item.Defense;
+                double _koefTemp = _dmg / _defTemp;
+
+                double diff1 = Math.Abs(1.00 - _koef);
+                double diff2 = Math.Abs(1.00 - _koefTemp);
+
+                if (diff1 == diff2)
+                {
+                    continue;
+                }
+                if (diff1 < diff2)
+                {
+                    continue;
+                }
+                if (diff1 > diff2)
+                {
+                    _def = _botcardTemp.Defense;
+                    _botcard = _botcardTemp;
+                    _koef = _koefTemp;
+                }
+            }
+        }
+
+        if (typeOfCard.Equals(TypeOfCard.Attack))
+        {
+            if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Special)))
+            {
+                _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Special)).First();
+                return _botcard;
+            }
+            else if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Attack)))
+            {
+                _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Attack)).OrderByDescending(item => item.Damage).First();
+            }
+        }
+
+        return _botcard;
     }
 
     public void printUserCards(User user)
@@ -469,10 +515,7 @@ public class Game : MonoBehaviour
 
     public Card SkipAttack()
     {
-        //Small warning when this happens, prob polish :)
-        Card skipCard = new Card("Placeholder", "Skip", 0, TypeOfCard.Skip, 0, 0, 0);
-
-        return skipCard;
+        return _skipCard;
     }
 
     public void SkipDefense(User user)
