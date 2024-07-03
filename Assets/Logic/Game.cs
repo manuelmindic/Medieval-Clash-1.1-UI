@@ -450,6 +450,11 @@ public class Game : MonoBehaviour
             if (_placedCard.Damage - card.Defense > 0)
             {
                 user.HealthPoints -= (_placedCard.Damage - card.Defense);
+
+                if (_placedCard.Damage - card.Defense > 5)
+                {
+                    _uiUpdater.MoveWitch();
+                }
             }
         }
 

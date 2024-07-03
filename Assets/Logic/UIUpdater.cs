@@ -29,9 +29,26 @@ public class UIUpdater : MonoBehaviour
     public Button userStats;
     public Button botStats;
     public Button backToStart;
-
     public ReadJSON readJSON;
+    public RectTransform witchImage;
+    public float speed = 2.0f;
+    public Vector2 startPosition = new Vector2(943, 8);
+    public Vector2 endPosition = new Vector2(315, 8);
 
+    public void MoveWitch()
+    {
+        Debug.Log("Wiiiiiiiitcccchhhhhh");
+        Image image = witchImage.GetComponent<Image>();
+
+        image.gameObject.SetActive(true);
+        witchImage.anchoredPosition = Vector2.MoveTowards(startPosition, endPosition, speed * Time.deltaTime);
+
+        if (witchImage.anchoredPosition == endPosition)
+        {
+            witchImage.anchoredPosition = startPosition;
+        }
+        //image.gameObject.SetActive(false);
+    }
 
     public void BotImage(string filename)
     {
