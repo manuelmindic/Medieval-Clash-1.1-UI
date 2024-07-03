@@ -31,9 +31,10 @@ public class Game : MonoBehaviour
 
     public Card _placedCard;
     public User _placedCardUser;
+    public Button backButton;
 
     public Card _skipCard;
-
+    public GameObject winLosePanel;
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
     public TMP_Text wonOrLostText;
@@ -69,6 +70,7 @@ public class Game : MonoBehaviour
     IEnumerator StartGame()
     {
         _player.Name = PlayerPrefs.GetString("Username", "Player 1");
+        userStatsLogic(_player);
         _uiUpdater.UpdateUserStats();
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
@@ -108,6 +110,7 @@ public class Game : MonoBehaviour
             StopCoroutine(WaitSeconds(5f));
 
             _uiUpdater.ChangeAllCardSlotStates(true);
+            userStatsLogic(_bot);
             _uiUpdater.UpdateUserStats();
             hasUserPickedCard = false;
             if (checkIfWon(_player, _bot))
@@ -155,6 +158,7 @@ public class Game : MonoBehaviour
 
 
             _uiUpdater.ChangeAllCardSlotStates(true);
+            userStatsLogic(_player);
             _uiUpdater.UpdateUserStats();
 
             checkIfWon(_player, _bot);
@@ -176,7 +180,10 @@ public class Game : MonoBehaviour
         }
         wonOrLostText.gameObject.SetActive(true);
         backToStart.gameObject.SetActive(true);
-        Debug.Log("HEEEEEEEYYYYYY");
+        winLosePanel.gameObject.SetActive(true);
+        backButton.gameObject.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
+        _submitButton.gameObject.SetActive(false);
         //yield return StartCoroutine(CheckIfUserHasPlacedCard());
     }
 
@@ -236,7 +243,7 @@ public class Game : MonoBehaviour
 
             Console.ForegroundColor = ConsoleColor.White;
             PlaceCounter(_bot, getBotCard(_bot, TypeOfCard.Defense));
-            printUserStats(_bot);
+            userStatsLogic(_bot);
 
             if (checkIfWon(_player, _bot))
             {
@@ -263,7 +270,7 @@ public class Game : MonoBehaviour
             {
                 PlaceCounter(_player, _player.UserDeck[Convert.ToInt32(defenseInput)]);
             }
-            printUserStats(_player);
+            userStatsLogic(_player);
 
             _player.UserDeck.Add(_deck.DrawCard());
             _bot.UserDeck.Add(_deck.DrawCard());
@@ -342,12 +349,12 @@ public class Game : MonoBehaviour
         Console.WriteLine();
         Console.WriteLine("----- The Current Turn Stack ----");
         Console.WriteLine(_placedCard.ToString());
-        printUserStats(_placedCardUser);
+        userStatsLogic(_placedCardUser);
         Console.WriteLine("---- End Of Current Turn Stack ----");
         Console.WriteLine();
     }
 
-    public void printUserStats(User user)
+    public void userStatsLogic(User user)
     {
         if (user.HealthPoints < 0)
         {
