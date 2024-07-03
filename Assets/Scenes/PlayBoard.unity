@@ -1042,7 +1042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98794c5c71ed4d94aa4ab86d35d35bd8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _name: Manu
+  _name: Bot
   _rating: 1000
   _healthPoints: 50
   _manaPoints: 50

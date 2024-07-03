@@ -284,12 +284,16 @@ public class Game : MonoBehaviour
         if (user1.HealthPoints <= 0)
         {
             wonOrLostText.SetText(user2.Name + " won the game! You Lost!");
+            user1.Rating -= 25; //User Lost
+            readJSON.UpdateRecord(user1.Name, -25);
             _finished = true;
             return true;
         }
         if (user2.HealthPoints <= 0)
         {
             wonOrLostText.SetText(user1.Name + " won the game! Congrats!");
+            user1.Rating += 25; //User Won
+            readJSON.UpdateRecord(user1.Name, 25);
             _finished = true;
             return true;
         }

@@ -45,11 +45,25 @@ public class ReadJSON : MonoBehaviour
     }
 
     public void AddRecord(string name)
+    {    
+        if (!doesUserExist(name))
+        {
+            List<Record> recordsList = myRecordList.records.ToList();
+            recordsList.Add(new Record { Name = name, Rating = 1000 }); // default rating of new users und so
+            myRecordList.records = recordsList.OrderByDescending(record => record.Rating).ToArray();
+            saveRecordToFile();
+        }
+    }
+
+    private bool doesUserExist(string name)
     {
-        List<Record> recordsList = myRecordList.records.ToList();
-        recordsList.Add(new Record { Name = name, Rating = 1000 }); // default rating of new users und so
-        myRecordList.records = recordsList.OrderByDescending(record => record.Rating).ToArray();
-        saveRecordToFile();
+        foreach (var user in myRecordList.records)
+        {
+            if (user.Name == name)
+                return true;
+        }
+
+        return false;
     }
 
     public Record GetRecordByName(string name)
@@ -59,6 +73,7 @@ public class ReadJSON : MonoBehaviour
 
     public void UpdateRecord(string name, int editRating)
     {
+        Debug.Log(name);
         Record record = GetRecordByName(name);
 
         if (record.Rating + editRating < 0) {  // + und - ist -
