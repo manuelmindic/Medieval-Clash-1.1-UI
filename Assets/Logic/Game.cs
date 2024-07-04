@@ -19,7 +19,6 @@ using Unity.VisualScripting;
 using UnityEngine.Windows;
 using UnityEngine.SceneManagement;
 
-
 public class Game : MonoBehaviour
 {
     public string _gameName;
@@ -48,6 +47,7 @@ public class Game : MonoBehaviour
     public Button botStats;
     public Button backToStart;
 
+    public AudioSource _audio;
 
     public UIUpdater _uiUpdater;
     public ReadJSON readJSON;
@@ -405,16 +405,31 @@ public class Game : MonoBehaviour
             }
         }
 
+        int randomNumber = UnityEngine.Random.Range(1, 4);
+
         if (typeOfCard.Equals(TypeOfCard.Attack))
         {
-            if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Special)))
+            if (randomNumber <= 2)
             {
-                _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Special)).First();
-                return _botcard;
+                if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Attack)))
+                {
+                    _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Attack)).OrderByDescending(item => item.Damage).First();
+                }
+                else if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Special)))
+                {
+                    _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Special)).First();
+                }
             }
-            else if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Attack)))
+            else
             {
-                _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Attack)).OrderByDescending(item => item.Damage).First();
+                if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Special)))
+                {
+                    _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Special)).First();
+                }
+                else if (user.UserDeck.Any(item => item.TypeOfCard.Equals(TypeOfCard.Attack)))
+                {
+                    _botcard = user.UserDeck.Where(item => item.TypeOfCard.Equals(TypeOfCard.Attack)).OrderByDescending(item => item.Damage).First();
+                }
             }
         }
 
@@ -518,6 +533,7 @@ public class Game : MonoBehaviour
 
                 if (_placedCard.Damage - card.Defense > 5)
                 {
+                    _audio.Play();
                     _uiUpdater.MoveWitch();
                 }
             }
@@ -540,6 +556,11 @@ public class Game : MonoBehaviour
     public Card SkipDefense(User user)
     {
         user.HealthPoints -= _placedCard.Damage;
+        if (_placedCard.Damage > 5)
+        {
+            _audio.Play();
+            _uiUpdater.MoveWitch();
+        }
         _placedCard = null;
         _placedCardUser = null;
         return _skipCard;
