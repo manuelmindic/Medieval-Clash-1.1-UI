@@ -94,10 +94,11 @@ public class Game : MonoBehaviour
             //Bug: Wenn man 7 Karten hat crashed es :(
             //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
             _discardButton.gameObject.SetActive(true);
+            _skipButton.gameObject.SetActive(true);
             _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Defense), false); //BEEP
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-            Debug.Log("User card: " + _player.UserDeck[index]);
+            //Debug.Log("User card: " + _player.UserDeck[index]);
             if (_uiUpdater._skipTurn){
                 PlaceCard(_player, _skipCard);
             }
@@ -122,7 +123,6 @@ public class Game : MonoBehaviour
             _uiUpdater.UpdateImagesFromPlacedCardSlots(botCard.ImageFileName, 1);
             placedCardSlots[1].gameObject.SetActive(true);
             PlaceCounter(_bot, botCard);
-
             _uiUpdater.BotImage("DefaultBot");
 
             yield return StartCoroutine(WaitSeconds(5f));
@@ -174,9 +174,11 @@ public class Game : MonoBehaviour
             _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Special), false);
             //index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
 
+            _skipButton.gameObject.SetActive(true);
+
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-            Debug.Log("User Counter: " + _player.UserDeck[index]);
+            //Debug.Log("User Counter: " + _player.UserDeck[index]);
             if (_uiUpdater._skipTurn)
             {
                 PlaceCounter(_player, _skipCard);

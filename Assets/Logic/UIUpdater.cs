@@ -162,6 +162,8 @@ public class UIUpdater : MonoBehaviour
             _isDiscardMode = false;
             Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
             UpdateCardSlots();
+            _discardButton.gameObject.SetActive(true);
+            _skipButton.gameObject.SetActive(true);
         }
     }
 
@@ -175,7 +177,7 @@ public class UIUpdater : MonoBehaviour
         //_player.UserDeck.Remove(selectedCard); //VLLT BRAUCH MA DAS SCHAU MA MAL //EDIT: JA WIR BRAUCHEN ES //EDIT2: NEIN WIR BRAUCHEN ES DOCH NICHT
         //placedCardSlots[0].gameObject.SetActive(false);
         _submitButton.gameObject.SetActive(false);
-        //_skipButton.gameObject.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
         _discardButton.gameObject.SetActive(false);
         //ChangeAllCardSlotStates(true);
         //UpdateCardSlots();
@@ -188,7 +190,9 @@ public class UIUpdater : MonoBehaviour
         ChangeAllCardSlotStates(true);
         Cursor.SetCursor(discardCursor, Vector2.zero, CursorMode.Auto);
         _isDiscardMode = !_isDiscardMode;
-
+        _submitButton.gameObject.SetActive(false);
+        _skipButton.gameObject.SetActive(false);
+        _discardButton.gameObject.SetActive(false);
         //Update cardslots
     }
 
@@ -248,6 +252,9 @@ public class UIUpdater : MonoBehaviour
         ChangeAllCardSlotStates(false);
         _skipTurn = true;
         Game.hasUserPickedCard = true;
+        _skipButton.gameObject.SetActive(false);
+        _discardButton.gameObject.SetActive(false);
+        _submitButton.gameObject.SetActive(false);
     }
 
     public void removeSelectedCardForUser()

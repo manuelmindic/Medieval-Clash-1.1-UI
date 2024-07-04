@@ -8772,7 +8772,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed9d1abb94fc0034682021ee6cc94e10, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gameName: Test Game
+  _gameName: Showcase Game
   _deck: {fileID: 1792015583}
   _finished: 0
   _player: {fileID: 1996186397}
@@ -9145,7 +9145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Stefan
   _rating: 1000
-  _healthPoints: 1
+  _healthPoints: 50
   _manaPoints: 50
   _money: 50
   _userDeck: []
