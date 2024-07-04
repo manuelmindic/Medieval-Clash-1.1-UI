@@ -7,16 +7,18 @@ using UnityEngine.UI;
 
 public class SettingScreen : MonoBehaviour { 
     private string input;
+    public TMP_InputField inputField;
     public ReadJSON _readJSON;
     public TextAsset _jsontext;
     public RawImage profilePicture1Circle;
     public RawImage profilePicture2Circle;
     public RawImage profilePicture3Circle;
-
+    public Button confirmButton;
 
     void Start()
     {
         UpdateProfilePicture();
+        confirmButton.onClick.AddListener(OnConfirmButtonClick);
     }
 
     // Update is called once per frame
@@ -43,9 +45,12 @@ public class SettingScreen : MonoBehaviour {
     {
         input = username;
         PlayerPrefs.SetString("Username", username);
-        Debug.Log(username);
         _readJSON.AddRecord(username);
-        
+    }
+
+    public void OnConfirmButtonClick()
+    {
+        ReadInput(inputField.text);
     }
 
     public void ChangeProfilePicture(string pictureName)
