@@ -26,15 +26,15 @@ public class SettingScreen : MonoBehaviour {
         profilePicture2Circle.gameObject.SetActive(false);
         profilePicture3Circle.gameObject.SetActive(false);
 
-        switch (PlayerPrefs.GetString("ProfilePicture", "redCircle"))
+        switch (PlayerPrefs.GetString("ProfilePicture", "profilePicture1"))
         {
-            case "redCircle":
+            case "profilePicture1":
                 profilePicture1Circle.gameObject.SetActive(true);
                 break;
-            case "blueCircle":
+            case "profilePicture2":
                 profilePicture2Circle.gameObject.SetActive(true);
                 break;
-            case "blackCircle":
+            case "profilePicture3":
                 profilePicture3Circle.gameObject.SetActive(true);
                 break;
         }

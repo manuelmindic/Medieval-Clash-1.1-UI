@@ -75,6 +75,7 @@ public class Game : MonoBehaviour
         _gameNameText.SetText(_gameName);
         _usernameText.SetText(_player.Name);
         _uiUpdater.SetTurnText(turn);
+        _uiUpdater.UpdateUserProfilePicture();
         _deck.Shuffle();
         for (int i = 0; i < 5; i++)
         {

@@ -16,6 +16,7 @@ public class UIUpdater : MonoBehaviour
     public Player _player;
     public Bot _bot;
     public Image botImage;
+    public Image _playerImage;
     public TMP_Text _gameNameText;
     public TMP_Text _usernameText;
     public TMP_Text wonOrLostText;
@@ -58,6 +59,14 @@ public class UIUpdater : MonoBehaviour
             rectTransform.anchoredPosition = startPosition;
         }
         //image.gameObject.SetActive(false);
+    }
+
+    public void UpdateUserProfilePicture()
+    {
+        Sprite texture = Resources.Load<Sprite>(PlayerPrefs.GetString("ProfilePicture", "profilePicture1"));
+        Image image = _playerImage.GetComponent<Image>();
+        Debug.Log("hi");
+        image.sprite = texture;
     }
 
     void Update()

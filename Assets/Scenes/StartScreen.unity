@@ -867,8 +867,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -789, y: 300}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: -786.57, y: 261.74}
+  m_SizeDelta: {x: 280, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &384639866
 MonoBehaviour:
@@ -896,7 +896,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: redCircle
+            m_StringArgument: profilePicture1
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!114 &384639867
@@ -1178,7 +1178,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -389, y: 300}
+  m_AnchoredPosition: {x: -215.99998, y: 294}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &479982368
@@ -1201,7 +1201,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: b38d8362605062a4686c16a1153b3eb0, type: 3}
+  m_Texture: {fileID: 2800000, guid: c107fc1b45496c2448bd136309a6419e, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1242,7 +1242,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: blackCircle
+            m_StringArgument: profilePicture3
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &520662166
@@ -1303,7 +1303,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 22748c62af76efc4facbe92655ecd270, type: 3}
+  m_Texture: {fileID: 2800000, guid: 015c66a393f30f948ba92b15b0df76ee, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -1344,7 +1344,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: redCircle
+            m_StringArgument: profilePicture1
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &536769565
@@ -1516,8 +1516,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -589, y: 300}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: -500.43, y: 261.74}
+  m_SizeDelta: {x: 280, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &714191123
 MonoBehaviour:
@@ -1545,7 +1545,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: blueCircle
+            m_StringArgument: profilePicture2
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!114 &714191124
@@ -2529,8 +2529,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -389, y: 300}
-  m_SizeDelta: {x: 200, y: 200}
+  m_AnchoredPosition: {x: -216, y: 261.74}
+  m_SizeDelta: {x: 280, y: 280}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1442052203
 MonoBehaviour:
@@ -2558,7 +2558,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: blackCircle
+            m_StringArgument: profilePicture3
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!114 &1442052204
@@ -3161,7 +3161,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -589, y: 300}
+  m_AnchoredPosition: {x: -496, y: 293}
   m_SizeDelta: {x: 200, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1823278220
@@ -3184,7 +3184,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Texture: {fileID: 2800000, guid: 5700b580e66eab842b8c1fb56e1dd881, type: 3}
+  m_Texture: {fileID: 2800000, guid: be116e3b6a3196c4cb66dce51406a8be, type: 3}
   m_UVRect:
     serializedVersion: 2
     x: 0
@@ -3225,7 +3225,7 @@ MonoBehaviour:
             m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
             m_IntArgument: 0
             m_FloatArgument: 0
-            m_StringArgument: blueCircle
+            m_StringArgument: profilePicture2
             m_BoolArgument: 0
           m_CallState: 2
 --- !u!1 &1849893476
