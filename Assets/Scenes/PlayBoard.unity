@@ -9145,7 +9145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _name: Stefan
   _rating: 1000
-  _healthPoints: 50
+  _healthPoints: 1
   _manaPoints: 50
   _money: 50
   _userDeck: []

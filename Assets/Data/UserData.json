@@ -97,16 +97,24 @@
             "Rating": 1000
         },
         {
-            "Name": "Johnny",
-            "Rating": 1000
-        },
-        {
             "Name": "Kevin",
             "Rating": 1000
         },
         {
             "Name": "Manna",
             "Rating": 1000
+        },
+        {
+            "Name": "",
+            "Rating": 1000
+        },
+        {
+            "Name": "XD",
+            "Rating": 975
+        },
+        {
+            "Name": "Johnny",
+            "Rating": 975
         }
     ]
 }
