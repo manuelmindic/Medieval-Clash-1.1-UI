@@ -1488,6 +1488,8 @@ MonoBehaviour:
   speed: 2000
   startPosition: {x: 800, y: -250}
   endPosition: {x: -1100, y: 250}
+  defaultCursor: {fileID: 2800000, guid: 997bb31c3d523404e9621c40fd1f8b25, type: 3}
+  discardCursor: {fileID: 2800000, guid: d4cca21d6a182e1418c622df27e7f7fc, type: 3}
 --- !u!4 &431428021
 Transform:
   m_ObjectHideFlags: 0
@@ -1946,7 +1948,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &579467690
 RectTransform:
   m_ObjectHideFlags: 0

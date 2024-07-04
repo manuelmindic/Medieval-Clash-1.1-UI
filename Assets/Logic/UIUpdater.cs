@@ -36,6 +36,10 @@ public class UIUpdater : MonoBehaviour
     public float speed;
     public Vector2 startPosition;
     public Vector2 endPosition;
+    public Texture2D defaultCursor;
+    public Texture2D discardCursor;
+
+    private bool _isDiscardMode = false;
 
     public void MoveWitch()
     {
@@ -101,23 +105,56 @@ public class UIUpdater : MonoBehaviour
 
     public void pickSelectedCardForUser(int index)
     {
-        List<Card> duplicatedList = _player.UserDeck;
+        if (!_isDiscardMode)
+        {
+            Card selectedCard = _player.UserDeck[index];
+            UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
+            placedCardSlots[0].gameObject.SetActive(true);
+            UpdateCardSlots();
+            _submitButton.gameObject.SetActive(true);
+            //_skipButton.gameObject.SetActive(true);
+            _discardButton.gameObject.SetActive(true);
+            //Happens when submitted
+            cardSlots[index].gameObject.SetActive(false);
+            ChangeAllCardSlotStates(false);
+            Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
+        }
+        
+        else
+        {
+            Card card = _player.UserDeck[index];
+            _player.UserDeck.RemoveAt(index);
 
-        Card selectedCard = _player.UserDeck[index];
-        //Debug.Log(_player.UserDeck[index]);
-        //_player.UserDeck.Remove(selectedCard); This happens when submitted
-        //UpdateImagesFromCardSlots("backcard", index);
-        //cardSlots[index].gameObject.SetActive(false);
-        UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
-        placedCardSlots[0].gameObject.SetActive(true);
-        UpdateCardSlots();
-        _submitButton.gameObject.SetActive(true);
-        //_skipButton.gameObject.SetActive(true);
-        _discardButton.gameObject.SetActive(true);
-        //Happens when submitted
-        cardSlots[index].gameObject.SetActive(false);
-        ChangeAllCardSlotStates(false);
-        Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
+            /*if (card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special)
+            {
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
+            }
+
+            if (card.TypeOfCard == TypeOfCard.Defense)
+            {
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+            }*/
+
+            if (Game._placedCard == null)
+            {
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
+            }
+            else
+            {
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+            }
+            _isDiscardMode = false;
+            Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
+            UpdateCardSlots();
+        }
     }
 
     public void HandleSubmitButtonClick()
@@ -140,47 +177,9 @@ public class UIUpdater : MonoBehaviour
 
     public void HandleDiscardButtonClick()
     {
-        int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
-        Card card = _player.UserDeck[index];
-        /*if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-        }
-        if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
-        }*/
-
-        _player.UserDeck.RemoveAt(index);
-        //cardSlots[index].gameObject.SetActive(true);
-        UpdateImagesFromPlacedCardSlots("backcard", 0);
-        placedCardSlots[0].gameObject.SetActive(false);
-        _submitButton.gameObject.SetActive(false);
-        _discardButton.gameObject.SetActive(false);
-
-
-
-        if (card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
-        }
-
-        if (card.TypeOfCard == TypeOfCard.Defense)
-        {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
-        }
-
-        UpdateCardSlots();
+        ChangeAllCardSlotStates(true);
+        Cursor.SetCursor(discardCursor, Vector2.zero, CursorMode.Auto);
+        _isDiscardMode = !_isDiscardMode;
 
         //Update cardslots
     }
@@ -250,7 +249,7 @@ public class UIUpdater : MonoBehaviour
         cardSlots[index].gameObject.SetActive(true);
         _submitButton.gameObject.SetActive(false);
         //_skipButton.gameObject.SetActive(false);
-        _discardButton.gameObject.SetActive(false);
+        _discardButton.gameObject.SetActive(true);
 
         if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
         {

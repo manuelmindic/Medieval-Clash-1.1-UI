@@ -28,8 +28,8 @@ public class Game : MonoBehaviour
     public Player _player;
     public Bot _bot;
 
-    public Card _placedCard;
-    public User _placedCardUser;
+    public static Card _placedCard;
+    public static User _placedCardUser;
     public Button backButton;
 
     public Card _skipCard;
@@ -92,6 +92,7 @@ public class Game : MonoBehaviour
             //DisableCardSlot(0);
             //Bug: Wenn man 7 Karten hat crashed es :(
             //Bug: Manchmal sind die Karten die in den Slots angezeigt werden out of sync, also die Falsche Textur wird wahrscheinlich geladen
+            _discardButton.gameObject.SetActive(true);
             _uiUpdater.ChangeCardSlotStates(_uiUpdater.GetIndexesForCardType(TypeOfCard.Defense), false); //BEEP
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
@@ -155,10 +156,10 @@ public class Game : MonoBehaviour
             _uiUpdater.BotImage("ThinkingBot");
             //New Turn (BOT FIRST)
             printDef(_bot);
-            yield return StartCoroutine(WaitSeconds(3f));
-            StopCoroutine(WaitSeconds(3f));
-            
+            yield return StartCoroutine(WaitSeconds(2f));
+            StopCoroutine(WaitSeconds(2f));
 
+            _discardButton.gameObject.SetActive(true);
             botCard = getBotCard(_bot, TypeOfCard.Attack);
             Debug.Log("Bot Card: " + botCard);
             PlaceCard(_bot, botCard);
@@ -531,7 +532,7 @@ public class Game : MonoBehaviour
             {
                 user.HealthPoints -= (_placedCard.Damage - card.Defense);
 
-                if (_placedCard.Damage - card.Defense > 5)
+                if (_placedCard.Damage - card.Defense > 10)
                 {
                     _audio.Play();
                     _uiUpdater.MoveWitch();
@@ -556,7 +557,7 @@ public class Game : MonoBehaviour
     public Card SkipDefense(User user)
     {
         user.HealthPoints -= _placedCard.Damage;
-        if (_placedCard.Damage > 5)
+        if (_placedCard.Damage > 10)
         {
             _audio.Play();
             _uiUpdater.MoveWitch();
