@@ -89,6 +89,10 @@
             "Rating": 1050
         },
         {
+            "Name": "minz",
+            "Rating": 1025
+        },
+        {
             "Name": "Eric",
             "Rating": 1000
         },
@@ -101,8 +105,8 @@
             "Rating": 1000
         },
         {
-            "Name": "minz",
-            "Rating": 1025
+            "Name": "Manna",
+            "Rating": 1000
         }
     ]
 }

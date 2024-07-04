@@ -18,6 +18,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Unity.VisualScripting;
 using UnityEngine.Windows;
 using UnityEngine.SceneManagement;
+using Unity.Mathematics;
 
 public class Game : MonoBehaviour
 {
@@ -48,7 +49,6 @@ public class Game : MonoBehaviour
     public Button backToStart;
 
     public AudioSource _audio;
-
     public UIUpdater _uiUpdater;
     public ReadJSON readJSON;
 
@@ -148,7 +148,7 @@ public class Game : MonoBehaviour
 
             turn++;
             _uiUpdater.SetTurnText(turn);
-
+            RandomWitchTurn(turn);
 
             _uiUpdater.ChangeAllCardSlotStates(false);
             //ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true); //BEEP
@@ -211,7 +211,7 @@ public class Game : MonoBehaviour
 
             turn++;
             _uiUpdater.SetTurnText(turn);
-
+            RandomWitchTurn(turn);
             _uiUpdater.ChangeAllCardSlotStates(true);
             _uiUpdater.UpdateCardSlots();
 
@@ -533,11 +533,6 @@ public class Game : MonoBehaviour
             {
                 user.HealthPoints -= (_placedCard.Damage - card.Defense);
 
-                if (_placedCard.Damage - card.Defense > 10)
-                {
-                    _audio.Play();
-                    _uiUpdater.MoveWitch();
-                }
             }
         }
 
@@ -558,17 +553,88 @@ public class Game : MonoBehaviour
     public Card SkipDefense(User user)
     {
         user.HealthPoints -= _placedCard.Damage;
-        if (_placedCard.Damage > 10)
-        {
-            _audio.Play();
-            _uiUpdater.MoveWitch();
-        }
+       
         _placedCard = null;
         _placedCardUser = null;
         return _skipCard;
     }
 
+    public void RandomWitchTurn(int turn)
+    {
+        int probability = UnityEngine.Random.Range(0, 101);
 
+        if (25 < turn && turn <= 40)
+        {
+            if(probability <= 10)
+            {
+                WitchMP();
+                _audio.Play();
+                _uiUpdater.MoveWitch();
+                _uiUpdater.UpdateUserStats();
+            }
+            return;
+        }
+
+        if (40 < turn && turn <= 60)
+        {
+            if (probability <= 20)
+            {
+                WitchMP();
+                _audio.Play();
+                _uiUpdater.MoveWitch();
+                _uiUpdater.UpdateUserStats();
+            }
+            return;
+        }
+
+        if (turn > 60)
+        {
+            if (probability <= 30)
+            {
+                WitchMP();
+                _audio.Play();
+                _uiUpdater.MoveWitch();
+                _uiUpdater.UpdateUserStats();
+            }
+            return;
+        }
+        
+    }
+
+    public void WitchMP()
+    {
+        int probability = UnityEngine.Random.Range(0, 101);
+
+        if (probability <= 10) {
+
+            _player.ManaPoints -= 20;
+        }
+
+        if (probability > 10 && probability <= 20)
+        {
+            _bot.ManaPoints -= 10;
+        }
+
+        if (probability > 20 && probability <= 30 )
+        {
+            _player.ManaPoints -= 10;
+        }
+
+        if (probability > 30 && probability <= 50)
+        {
+            _bot.ManaPoints -= 5;
+        }
+
+        if (probability > 50 && probability <= 90)
+        {
+            _player.ManaPoints += 5;
+        }
+
+        if (probability > 90 && probability <= 100)
+        {
+            _player.ManaPoints += 10;
+        }
+    }
 
     private List<Card> assignCards()
     {
