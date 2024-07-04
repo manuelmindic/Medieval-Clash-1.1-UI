@@ -32,7 +32,7 @@ public class GameDeck : MonoBehaviour
     public Card DrawCard()
     {
         Card drawnCard = _deck.First();
-        _deck.RemoveAt(0);
+        Shuffle();
 
         return drawnCard;
     }

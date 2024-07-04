@@ -81,8 +81,9 @@ public class Game : MonoBehaviour
             Card drawnCard = _deck.DrawCard();
             _player.UserDeck.Add(drawnCard);
             _uiUpdater.UpdateImagesFromCardSlots(drawnCard.ImageFileName, _player.UserDeck.Count - 1);
+            drawnCard = _deck.DrawCard();
             cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(true);
-            _bot.UserDeck.Add(_deck.DrawCard());
+            _bot.UserDeck.Add(drawnCard);
         }
 
         while (!_finished)
@@ -95,7 +96,14 @@ public class Game : MonoBehaviour
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             int index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
             Debug.Log("User card: " + _player.UserDeck[index]);
-            PlaceCard(_player, _player.UserDeck[index]);
+            if (_uiUpdater._skipTurn){
+                PlaceCard(_player, _skipCard);
+            }
+            else
+            {
+                PlaceCard(_player, _player.UserDeck[index]);
+            }
+            _uiUpdater._skipTurn = false;
             _uiUpdater.UpdateCardSlots();
             _uiUpdater.BotImage("AngryBot");
 
@@ -131,8 +139,10 @@ public class Game : MonoBehaviour
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
 
-            _player.UserDeck.Add(_deck.DrawCard());
-            _bot.UserDeck.Add(_deck.DrawCard());
+            if(_player.UserDeck.Count != 7) 
+                _player.UserDeck.Add(_deck.DrawCard());
+            if (_bot.UserDeck.Count != 7)
+                _bot.UserDeck.Add(_deck.DrawCard());
 
             turn++;
             _uiUpdater.SetTurnText(turn);
@@ -143,7 +153,6 @@ public class Game : MonoBehaviour
             _uiUpdater.UpdateCardSlots();
 
             _uiUpdater.BotImage("ThinkingBot");
-
             //New Turn (BOT FIRST)
             printDef(_bot);
             yield return StartCoroutine(WaitSeconds(3f));
@@ -166,7 +175,15 @@ public class Game : MonoBehaviour
             yield return StartCoroutine(CheckIfUserHasPlacedCard());
             index = (int)Variables.Object(placedCardSlots[0]).Get("cardIndexInUserDeck");
             Debug.Log("User Counter: " + _player.UserDeck[index]);
-            PlaceCounter(_player, _player.UserDeck[index]);
+            if (_uiUpdater._skipTurn)
+            {
+                PlaceCounter(_player, _skipCard);
+            }
+            else
+            {
+                PlaceCounter(_player, _player.UserDeck[index]);
+            }
+            _uiUpdater._skipTurn = false;
             _uiUpdater.UpdateCardSlots();
 
             yield return StartCoroutine(WaitSeconds(5f));
@@ -185,8 +202,10 @@ public class Game : MonoBehaviour
             placedCardSlots[0].gameObject.SetActive(false);
             placedCardSlots[1].gameObject.SetActive(false);
 
-            _player.UserDeck.Add(_deck.DrawCard());
-            _bot.UserDeck.Add(_deck.DrawCard());
+            if (_player.UserDeck.Count != 7)
+                _player.UserDeck.Add(_deck.DrawCard());
+            if (_bot.UserDeck.Count != 7)
+                _bot.UserDeck.Add(_deck.DrawCard());
 
             turn++;
             _uiUpdater.SetTurnText(turn);
@@ -348,7 +367,7 @@ public class Game : MonoBehaviour
         if (typeOfCard.Equals(TypeOfCard.Defense) && !user.UserDeck.Any(c => c.TypeOfCard == typeOfCard))
         {
             Console.WriteLine("Bot skipped Defense");
-            _botcard = SkipAttack();
+            _botcard = SkipDefense(user);
             return _botcard;
         }
 
@@ -518,11 +537,12 @@ public class Game : MonoBehaviour
         return _skipCard;
     }
 
-    public void SkipDefense(User user)
+    public Card SkipDefense(User user)
     {
         user.HealthPoints -= _placedCard.Damage;
         _placedCard = null;
         _placedCardUser = null;
+        return _skipCard;
     }
 
 

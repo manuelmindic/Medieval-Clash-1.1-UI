@@ -26,6 +26,7 @@ public class UIUpdater : MonoBehaviour
     public Button _skipButton;
     public Button _discardButton;
 
+    public bool _skipTurn = false;
     public Button userStats;
     public Button botStats;
     public Button backToStart;
@@ -218,6 +219,15 @@ public class UIUpdater : MonoBehaviour
         }
 
         return result;
+    }
+
+    public void handleSkipButton()
+    {
+        UpdateImagesFromPlacedCardSlots("backcard", 0);
+        placedCardSlots[0].gameObject.SetActive(true);
+        ChangeAllCardSlotStates(false);
+        _skipTurn = true;
+        Game.hasUserPickedCard = true;
     }
 
     public void removeSelectedCardForUser()
