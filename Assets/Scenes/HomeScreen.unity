@@ -2440,7 +2440,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b52ae709e0dfe644b6544fa37671e2a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jsontext: {fileID: 4900000, guid: c9eb1416c7e88b848a9d44fb23fee361, type: 3}
   readJSON: {fileID: 1080877211}
 --- !u!1 &919878198
 GameObject:
@@ -2602,7 +2601,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1080877210
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2634,7 +2633,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b098b8762d16ab4ba822d7437b7d90f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _jsontext: {fileID: 4900000, guid: c9eb1416c7e88b848a9d44fb23fee361, type: 3}
   myRecordList:
     records: []
 --- !u!1 &1093335594

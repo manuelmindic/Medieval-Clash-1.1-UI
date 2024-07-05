@@ -3,17 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
+using static ReadJSON;
 
 public class ScoreBoard : MonoBehaviour
 {
     private Transform entryContainer;
     private Transform entryTemplate;
-    public TextAsset _jsontext;
     public ReadJSON readJSON;
 
     private void Awake()
     {
-        readJSON.fillRecords(_jsontext);
         entryContainer = transform.Find("Viewport/scoreboardContainer");
         entryTemplate = entryContainer.Find("scoreboardTemplate");
 

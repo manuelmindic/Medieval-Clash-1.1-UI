@@ -6,8 +6,7 @@ using System.IO;
 
 public class ReadJSON : MonoBehaviour
 {
-
-    public TextAsset _jsontext;
+    private string filePath;
 
     [System.Serializable]
     public class Record
@@ -27,7 +26,8 @@ public class ReadJSON : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        myRecordList = JsonUtility.FromJson<RecordsList>(_jsontext.text);
+        filePath = Path.Combine(Application.persistentDataPath, "Data", "UserData.json");
+        myRecordList = JsonUtility.FromJson<RecordsList>(File.ReadAllText(filePath));
         myRecordList.records = myRecordList.records.OrderByDescending(record => record.Rating).ToArray();
     }
 
@@ -35,13 +35,6 @@ public class ReadJSON : MonoBehaviour
     void Update()
     {
         
-    }
-
-    public void fillRecords(TextAsset jsontext)
-    {
-        myRecordList = JsonUtility.FromJson<RecordsList>(jsontext.text);
-        myRecordList.records = myRecordList.records.OrderByDescending(record => record.Rating).ToArray();
-
     }
 
     public void AddRecord(string name)
@@ -90,8 +83,8 @@ public class ReadJSON : MonoBehaviour
     public void saveRecordToFile()
     {
         string jsonText = JsonUtility.ToJson(myRecordList, true);
-        File.WriteAllText("Assets/Data/UserData.json", jsonText);
-
+        File.WriteAllText(filePath, jsonText);
+        Debug.Log(Application.persistentDataPath);
         #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh();
         #endif
