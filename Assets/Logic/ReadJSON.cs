@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using System.IO;
+using UnityEngine.WSA;
 
 public class ReadJSON : MonoBehaviour
 {
     private string filePath;
+    private string folderPath;
+    public TextAsset jsonData;
 
     [System.Serializable]
     public class Record
@@ -26,9 +29,21 @@ public class ReadJSON : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        filePath = Path.Combine(Application.persistentDataPath, "Data", "UserData.json");
-        myRecordList = JsonUtility.FromJson<RecordsList>(File.ReadAllText(filePath));
+        folderPath = Path.Combine(UnityEngine.Application.persistentDataPath, "Data");
+        filePath = Path.Combine(UnityEngine.Application.persistentDataPath, "Data", "UserData.json");
+
+
+        if (File.Exists(filePath))
+            myRecordList = JsonUtility.FromJson<RecordsList>(File.ReadAllText(filePath));
+        else
+        {
+            Directory.CreateDirectory(folderPath);
+            File.Create(filePath).Dispose();
+            myRecordList = JsonUtility.FromJson<RecordsList>(jsonData.text);
+            //saveRecordToFile();
+        }
         myRecordList.records = myRecordList.records.OrderByDescending(record => record.Rating).ToArray();
+        saveRecordToFile();
     }
 
     // Update is called once per frame
@@ -84,7 +99,7 @@ public class ReadJSON : MonoBehaviour
     {
         string jsonText = JsonUtility.ToJson(myRecordList, true);
         File.WriteAllText(filePath, jsonText);
-        Debug.Log(Application.persistentDataPath);
+        Debug.Log(UnityEngine.Application.persistentDataPath);
         #if UNITY_EDITOR
                 UnityEditor.AssetDatabase.Refresh();
         #endif
