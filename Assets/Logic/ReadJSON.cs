@@ -31,7 +31,6 @@ public class ReadJSON : MonoBehaviour
         folderPath = Path.Combine(UnityEngine.Application.persistentDataPath, "Data");
         filePath = Path.Combine(UnityEngine.Application.persistentDataPath, "Data", "UserData.json");
 
-
         if (File.Exists(filePath))
             myRecordList = JsonUtility.FromJson<RecordsList>(File.ReadAllText(filePath));
         else

@@ -21,6 +21,7 @@ public class UIUpdater : MonoBehaviour
     public TMP_Text wonOrLostText;
     public TMP_Text _turnText;
     public Transform[] cardSlots;
+    public Transform[] botCardSlots;
     public Transform[] placedCardSlots;
     public Button _submitButton;
     public Button _skipButton;
@@ -97,11 +98,20 @@ public class UIUpdater : MonoBehaviour
             "\n" + "GP: " + _bot.Money + "\n";
     }
 
-    public void UpdateImagesFromCardSlots(string filename, int index)
+    public void UpdateImagesFromCardSlots(string filename, int index, string role)
     {
-        Texture2D texture = Resources.Load<Texture2D>(filename);
-        RawImage image = cardSlots[index].GetComponent<RawImage>();
-        image.texture = texture;
+        if (role == "player")
+        {
+            Texture2D texture = Resources.Load<Texture2D>(filename);
+            RawImage image = cardSlots[index].GetComponent<RawImage>();
+            image.texture = texture;
+        }
+        if (role == "bot")
+        {
+            Texture2D texture = Resources.Load<Texture2D>(filename);
+            RawImage image = botCardSlots[index].GetComponent<RawImage>();
+            image.texture = texture;
+        }
     }
 
     public void UpdateImagesFromPlacedCardSlots(string filename, int index)
@@ -118,13 +128,13 @@ public class UIUpdater : MonoBehaviour
             Card selectedCard = _player.UserDeck[index];
             UpdateImagesFromPlacedCardSlots(selectedCard._imageFileName, 0);
             placedCardSlots[0].gameObject.SetActive(true);
-            UpdateCardSlots();
+            UpdateCardSlots("player");
             _submitButton.gameObject.SetActive(true);
             //_skipButton.gameObject.SetActive(true);
             _discardButton.gameObject.SetActive(true);
             //Happens when submitted
             cardSlots[index].gameObject.SetActive(false);
-            ChangeAllCardSlotStates(false);
+            ChangeAllCardSlotStates(false, "player");
             Variables.Object(placedCardSlots[0]).Set("cardIndexInUserDeck", index);
         }
         
@@ -149,19 +159,19 @@ public class UIUpdater : MonoBehaviour
 
             if (Game._placedCard == null)
             {
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), false);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack, "player"), true, "player");
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special, "player"), true, "player");
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense, "player"), false, "player");
             }
             else
             {
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), false);
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), false);
-                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack, "player"), false, "player");
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special, "player"), false, "player");
+                ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense, "player"), true, "player");
             }
             _isDiscardMode = false;
             Cursor.SetCursor(defaultCursor, Vector2.zero, CursorMode.Auto);
-            UpdateCardSlots();
+            UpdateCardSlots("player");
             _discardButton.gameObject.SetActive(true);
             _skipButton.gameObject.SetActive(true);
         }
@@ -187,7 +197,7 @@ public class UIUpdater : MonoBehaviour
 
     public void HandleDiscardButtonClick()
     {
-        ChangeAllCardSlotStates(true);
+        ChangeAllCardSlotStates(true, "player");
         Cursor.SetCursor(discardCursor, Vector2.zero, CursorMode.Auto);
         _isDiscardMode = !_isDiscardMode;
         _submitButton.gameObject.SetActive(false);
@@ -196,52 +206,129 @@ public class UIUpdater : MonoBehaviour
         //Update cardslots
     }
 
-    public void ChangeCardSlotStates(List<int> indexes, bool isEnabled)
+    public void ChangeCardSlotStates(List<int> indexes, bool isEnabled, string role)
     {
         foreach (var index in indexes)
         {
-            RawImage image = cardSlots[index].GetComponent<RawImage>();
-            EventTrigger eventTrigger = cardSlots[index].gameObject.GetComponent<EventTrigger>();
-            if (!isEnabled)
+            if (role == "player")
             {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
-                eventTrigger.enabled = false;
+                RawImage image = cardSlots[index].GetComponent<RawImage>();
+                EventTrigger eventTrigger = cardSlots[index].gameObject.GetComponent<EventTrigger>(); // karte kann nicht gepicked werden
+                if (!isEnabled)
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                    eventTrigger.enabled = false;
+                }
+                else
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                    eventTrigger.enabled = true;
+                }
             }
-            else
+            if (role == "bot")
             {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
-                eventTrigger.enabled = true;
+                RawImage image = botCardSlots[index].GetComponent<RawImage>();
+                EventTrigger eventTrigger = botCardSlots[index].gameObject.GetComponent<EventTrigger>(); // karte kann nicht gepicked werden
+                if (!isEnabled)
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                    eventTrigger.enabled = false;
+                }
+                else
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                    eventTrigger.enabled = true;
+                }
             }
         }
     }
 
-    public void ChangeAllCardSlotStates(bool isEnabled)
+    public void ChangeAllCardSlotStates(bool isEnabled, string role)
     {
-        for (int i = 0; i < _player.UserDeck.Count; i++)
+        if (role == "player")
         {
-            RawImage image = cardSlots[i].GetComponent<RawImage>();
-            EventTrigger eventTrigger = cardSlots[i].gameObject.GetComponent<EventTrigger>();
-            if (!isEnabled)
+            for (int i = 0; i < _player.UserDeck.Count; i++)
             {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
-                eventTrigger.enabled = false;
-            }
-            else
-            {
-                image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
-                eventTrigger.enabled = true;
+                RawImage image = cardSlots[i].GetComponent<RawImage>();
+                EventTrigger eventTrigger = cardSlots[i].gameObject.GetComponent<EventTrigger>();
+                if (!isEnabled)
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                    eventTrigger.enabled = false;
+                }
+                else
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                    eventTrigger.enabled = true;
+                }
             }
         }
+        if (role == "bot")
+        {
+            for (int i = 0; i < _bot.UserDeck.Count; i++)
+            {
+                RawImage image = botCardSlots[i].GetComponent<RawImage>();
+                EventTrigger eventTrigger = botCardSlots[i].gameObject.GetComponent<EventTrigger>();
+                if (!isEnabled)
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 0.5f);
+                    eventTrigger.enabled = false;
+                }
+                else
+                {
+                    image.color = new Color(image.color.r, image.color.g, image.color.b, 1f);
+                    eventTrigger.enabled = true;
+                }
+            }
+        }
+        
     }
-    public List<int> GetIndexesForCardType(TypeOfCard typeOfCard)
+
+    public void ChangeAllCardSlotStatesToFullDark(string role)
+    {
+        if (role == "player")
+        {
+            for (int i = 0; i < _player.UserDeck.Count; i++)
+            {
+                RawImage image = cardSlots[i].GetComponent<RawImage>();
+                EventTrigger eventTrigger = cardSlots[i].gameObject.GetComponent<EventTrigger>();
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
+                eventTrigger.enabled = false;
+
+            }
+        }
+        if (role == "bot")
+        {
+            for (int i = 0; i < _bot.UserDeck.Count; i++)
+            {
+                RawImage image = botCardSlots[i].GetComponent<RawImage>();
+                EventTrigger eventTrigger = botCardSlots[i].gameObject.GetComponent<EventTrigger>();
+                image.color = new Color(image.color.r, image.color.g, image.color.b, 0f);
+                eventTrigger.enabled = false;
+            }
+        }
+
+    }
+
+    public List<int> GetIndexesForCardType(TypeOfCard typeOfCard, string role)
     {
         List<int> result = new List<int>();
-        for (int i = 0; i < _player.UserDeck.Count; i++)
+        if (role == "player")
         {
-            if (_player.UserDeck[i].TypeOfCard == typeOfCard)
-                result.Add(i);
+            for (int i = 0; i < _player.UserDeck.Count; i++)
+            {
+                if (_player.UserDeck[i].TypeOfCard == typeOfCard)
+                    result.Add(i);
+            }
         }
-
+        if(role == "bot")
+        {
+            for (int i = 0; i < _bot.UserDeck.Count; i++)
+            {
+                if (_bot.UserDeck[i].TypeOfCard == typeOfCard)
+                    result.Add(i);
+            }
+        }
         return result;
     }
 
@@ -249,12 +336,21 @@ public class UIUpdater : MonoBehaviour
     {
         UpdateImagesFromPlacedCardSlots("backcard", 0);
         placedCardSlots[0].gameObject.SetActive(true);
-        ChangeAllCardSlotStates(false);
+        ChangeAllCardSlotStates(false, "player");
         _skipTurn = true;
         Game.hasUserPickedCard = true;
         _skipButton.gameObject.SetActive(false);
         _discardButton.gameObject.SetActive(false);
         _submitButton.gameObject.SetActive(false);
+    }
+
+    public void handleSkipBot()
+    {
+        UpdateImagesFromPlacedCardSlots("backcard", 1);
+        placedCardSlots[1].gameObject.SetActive(true);
+        ChangeAllCardSlotStates(false, "bot");
+        _skipTurn = true;
+        //Game.hasUserPickedCard = true;
     }
 
     public void removeSelectedCardForUser()
@@ -268,40 +364,59 @@ public class UIUpdater : MonoBehaviour
 
         if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Attack)
         {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack, "player"), true, "player");
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special, "player"), true, "player");
         }
         if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Special)
         {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack), true);
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Attack, "player"), true, "player");
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Special, "player"), true, "player");
         }
         if (_player.UserDeck[index].TypeOfCard == TypeOfCard.Defense)
         {
-            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense), true);
+            ChangeCardSlotStates(GetIndexesForCardType(TypeOfCard.Defense, "player"), true, "player");
         }
-        //
     }
 
-    public void UpdateCardSlots()
+    public void UpdateCardSlots(string role)
     {
-        //SCUFFED LÖSUNG :SOB:
-        if (_player.UserDeck.Count == 7)
+        if (role == "player")
         {
-            cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(false);
-        }
-        else
-        {
-            cardSlots[_player.UserDeck.Count].gameObject.SetActive(false);
-        }
+            //SCUFFED LÖSUNG :SOB:
+            if (_player.UserDeck.Count == 7)
+            {
+                cardSlots[_player.UserDeck.Count - 1].gameObject.SetActive(false);
+            }
+            else
+            {
+                cardSlots[_player.UserDeck.Count].gameObject.SetActive(false);
+            }
 
-        for (int i = 0; i < _player.UserDeck.Count; i++)
+            for (int i = 0; i < _player.UserDeck.Count; i++)
+            {
+                UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i, role);
+                //if (i + 1 == _player.UserDeck.Count) 
+                cardSlots[i].gameObject.SetActive(true);
+            }
+        }
+        if (role == "bot")
         {
-            UpdateImagesFromCardSlots(_player.UserDeck[i].ImageFileName, i);
-            //if (i + 1 == _player.UserDeck.Count) 
-            cardSlots[i].gameObject.SetActive(true);
+            //SCUFFED LÖSUNG :SOB:
+            if (_bot.UserDeck.Count == 7)
+            {
+                botCardSlots[_bot.UserDeck.Count - 1].gameObject.SetActive(false);
+            }
+            else
+            {
+                botCardSlots[_bot.UserDeck.Count].gameObject.SetActive(false);
+            }
+
+            for (int i = 0; i < _bot.UserDeck.Count; i++)
+            {
+                UpdateImagesFromCardSlots(_bot.UserDeck[i].ImageFileName, i, role);
+                //if (i + 1 == _player.UserDeck.Count) 
+                botCardSlots[i].gameObject.SetActive(true);
+            }
         }
     }
-
-
 }
