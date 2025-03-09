@@ -20,4 +20,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/SettingsBotVsBot.unity
     guid: 39504370da8c688468dda5eb0b847947
+  - enabled: 1
+    path: Assets/Scenes/PlayBoardBVB.unity
+    guid: 949c86e57d90bb64c8d2ac96fa58d3b4
   m_configObjects: {}
