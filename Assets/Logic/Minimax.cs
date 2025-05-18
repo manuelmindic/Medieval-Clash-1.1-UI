@@ -356,7 +356,7 @@ public class Minimax
 
                 if (beta <= alpha)
                 {
-                    Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
+                    //Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
                     break; // Pruning
                 }
             }
@@ -387,7 +387,7 @@ public class Minimax
 
                 if (beta <= alpha)
                 {
-                    Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
+                    //Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
                     break;
                 }
             }
@@ -413,7 +413,7 @@ public class Minimax
 
                 if (beta <= alpha)
                 {
-                    Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
+                    //Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
                     break;
                 }
             }
@@ -444,7 +444,7 @@ public class Minimax
 
                 if (beta <= alpha)
                 {
-                    Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
+                    //Debug.Log($"Pruning at depth {depth}, phase {phase}: alpha = {alpha}, beta = {beta}");
                     break;
                 }
             }

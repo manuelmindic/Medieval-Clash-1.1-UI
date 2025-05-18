@@ -39,7 +39,7 @@ public class MCTS
 
         for (int i = 0; i < simulationCount; i++)
         {
-            Log($"iteration {i}");
+            //Log($"iteration {i}");
             var selectedNode = MCTSSelectNode(rootNode);
             var expandedNode = MCTSExpandNode(selectedNode, isBotCountering, botTurn);
             var result = MCTSSimulate(expandedNode, isBotCountering, botTurn, placedCard);
@@ -56,12 +56,12 @@ public class MCTS
     // Selection Phase - Blattknoten suchen/bewerten
     private MCTSNode MCTSSelectNode(MCTSNode node)
     {
-        Log($"Selecting node with the {node.Children.Count} children...");
+        //Log($"Selecting node with the {node.Children.Count} children...");
         while (node.Children.Any())
         {
             node = MCTSUCTSelect(node);
         }
-        Log("Selection phase complete.");
+        //Log("Selection phase complete.");
         return node;
     }
 
@@ -277,7 +277,7 @@ public class MCTS
 
         actingUser.UserDeck.Remove(card);
 
-        Debug.Log($"{(isBotTurn ? "Bot" : "Player")} used {card.TypeOfCard} card: {card.Name}");
+        //Debug.Log($"{(isBotTurn ? "Bot" : "Player")} used {card.TypeOfCard} card: {card.Name}");
     }
 
 
