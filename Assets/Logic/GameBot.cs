@@ -78,8 +78,42 @@ public class GameBot : MonoBehaviour
     IEnumerator StartGame()
     {
         int turn = 1;
-        _player.Name = "alg1";
-        _bot.Name = "alg2";
+
+        int PlayerName = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
+
+        switch (PlayerName)
+        {
+            case 1:
+                _player.Name = "Minimax";
+                break;
+            case 2:
+                _player.Name = "Minimax Alpha-Beta";
+                break;
+            case 3:
+                _player.Name = "MCTS";
+                break;
+            default:
+                _player.Name = "Unknown";
+                break;
+        }
+
+        int BotName = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
+
+        switch (PlayerName)
+        {
+            case 1:
+                _bot.Name = "Minimax";
+                break;
+            case 2:
+                _bot.Name = "Minimax Alpha-Beta";
+                break;
+            case 3:
+                _bot.Name = "MCTS";
+                break;
+            default:
+                _bot.Name = "Unknown";
+                break;
+        }
 
         TextMeshProUGUI userText = userStats.GetComponentInChildren<TextMeshProUGUI>();
         userText.text = _player.Name;
@@ -114,58 +148,57 @@ public class GameBot : MonoBehaviour
                 // write not hidden
             }
 
-            Card bot2Card = null;
-            int Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
-            if ((Bot2algorithmus == 1))
+            Card bot1Card = null;
+            int Bot1algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
+            if ((Bot1algorithmus == 1))
             {
                 GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
-                bot2Card = new Minimax().BotDecideMove(gameState, "bot_attack", 4); // 4. player attack wichtig da
+                bot1Card = new Minimax().BotDecideMove(gameState, "bot_attack", 4); // 4. player attack wichtig da
             }
-            if ((Bot2algorithmus == 2))
+            if ((Bot1algorithmus == 2))
             {
                 GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
-                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_attack", 4); // 4. player attack wichtig da
+                bot1Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_attack", 4); // 4. player attack wichtig da
             }
-            if (Bot2algorithmus == 3)
+            if (Bot1algorithmus == 3)
             {
-                bot2Card = new MCTS().MCTSFindBestMove(_player, _bot, placedCard: null, isBotCountering: false, botTurn: true);
+                bot1Card = new MCTS().MCTSFindBestMove(_player, _bot, placedCard: null, isBotCountering: false, botTurn: true);
             }
 
-            if (bot2Card != null)
+            if (bot1Card != null)
             {
-                PlaceCard(_player, bot2Card);
+                PlaceCard(_player, bot1Card);
             }
-            else if (bot2Card == null)
+            else if (bot1Card == null)
             {
                 PlaceCard(_player, _skipCard);
             }
             printPlacedView();
 
-            Card botCard = null;
+            Card bot2Card = null;
+            int Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
 
-            int algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
-
-            if ((algorithmus == 1))
+            if ((Bot2algorithmus == 1))
             {
                 GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                botCard = new Minimax().BotDecideMove(gameState, "bot_counter", 3); // attack nicht wichtig da
+                bot2Card = new Minimax().BotDecideMove(gameState, "bot_counter", 3); // attack nicht wichtig da
             }
-            if ((algorithmus == 2))
+            if ((Bot2algorithmus == 2))
             {
                 GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_counter", 3); // attack nicht wichtig da
+                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_counter", 3); // attack nicht wichtig da
             }
-            if (algorithmus == 3)
+            if (Bot2algorithmus == 3)
             {
-                botCard = new MCTS().MCTSFindBestMove(_bot, _player, _placedCard, isBotCountering: true, botTurn: true);
+                bot2Card = new MCTS().MCTSFindBestMove(_bot, _player, _placedCard, isBotCountering: true, botTurn: true);
             }
 
-            if (botCard != null)
+            if (bot2Card != null)
             {
-                PlaceCounter(_bot, botCard);
-                printPlacedViewCounter(botCard);
+                PlaceCounter(_bot, bot2Card);
+                printPlacedViewCounter(bot2Card);
             }
-            else if (botCard == null)
+            else if (bot2Card == null)
             {
                 PlaceCounter(_bot, _skipCard);
                 printPlacedViewCounter(_skipCard);
@@ -188,57 +221,58 @@ public class GameBot : MonoBehaviour
 
             //New Turn (BOT FIRST)
 
-            algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
-            if ((algorithmus == 1))
+            Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
+            if ((Bot2algorithmus == 1))
             {
                 GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                botCard = new Minimax().BotDecideMove(gameState, "bot_attack", 4); // 4. player attack wichtig da
+                bot2Card = new Minimax().BotDecideMove(gameState, "bot_attack", 4); // 4. player attack wichtig da
             }
-            if ((algorithmus == 2))
+            if ((Bot2algorithmus == 2))
             {
                 GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_attack", 4); // 4. player attack wichtig da
+                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_attack", 4); // 4. player attack wichtig da
             }
-            if (algorithmus == 3)
+            if (Bot2algorithmus == 3)
             {
-                botCard = new MCTS().MCTSFindBestMove(_bot, _player, placedCard: null, isBotCountering: false, botTurn: true);
+                bot2Card = new MCTS().MCTSFindBestMove(_bot, _player, placedCard: null, isBotCountering: false, botTurn: true);
             }
 
-            if (botCard != null)
+            if (bot2Card != null)
             {
-                PlaceCard(_bot, botCard);
+                PlaceCard(_bot, bot2Card);
             }
-            else if (botCard == null)
+            else if (bot2Card == null)
             {
                 PlaceCard(_bot, _skipCard);
             }
 
             printPlacedView();
 
-            if ((Bot2algorithmus == 1))
+            Bot1algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
+            if ((Bot1algorithmus == 1))
             {
                 GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0 , 0);
                 // damage
-                bot2Card = new Minimax().BotDecideMove(gameState, "bot_counter", 3); // attack nicht wichtig da
+                bot1Card = new Minimax().BotDecideMove(gameState, "bot_counter", 3); // attack nicht wichtig da
             }
-            if ((Bot2algorithmus == 2))
+            if ((Bot1algorithmus == 2))
             {
                 GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
                 // damage
-                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_counter", 3); // attack nicht wichtig da
+                bot1Card = new Minimax().BotDecideMoveAlphaBeta(gameState, "bot_counter", 3); // attack nicht wichtig da
             }
-            if (Bot2algorithmus == 3)
+            if (Bot1algorithmus == 3)
             {
-                bot2Card = new MCTS().MCTSFindBestMove(_player, _bot, placedCard: null, isBotCountering: true, botTurn: true);
+                bot1Card = new MCTS().MCTSFindBestMove(_player, _bot, placedCard: null, isBotCountering: true, botTurn: true);
                 // damage
             }
 
-            if (bot2Card != null)
+            if (bot1Card != null)
             {
-                PlaceCounter(_player, bot2Card);
-                printPlacedViewCounter(bot2Card);
+                PlaceCounter(_player, bot1Card);
+                printPlacedViewCounter(bot1Card);
             }
-            else if (bot2Card == null)
+            else if (bot1Card == null)
             {
                 PlaceCounter(_player, _skipCard);
                 printPlacedViewCounter(_skipCard);
