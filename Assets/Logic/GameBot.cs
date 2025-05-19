@@ -39,6 +39,10 @@ public class GameBot : MonoBehaviour
 
     public int _depth = 4;
 
+    public TMP_Text _hiddenField;
+    public TMP_Text _winsOne;
+    public TMP_Text _winsTwo;
+
     private List<MetricsState> allGameResults;
 
     private void Start()
@@ -147,13 +151,14 @@ public class GameBot : MonoBehaviour
 
         while (!_finished)
         {
+            TextMeshProUGUI hiddenText = _hiddenField.GetComponentInChildren<TextMeshProUGUI>();
             if (PlayerPrefs.GetInt("Deck", 1) == 1)
             {
-                // write hidden
+                hiddenText.text = "Hidden: yes";
             }
             else
             {
-                // write not hidden
+                hiddenText.text = "Hidden: no";
             }
 
             Card bot1Card = null;
