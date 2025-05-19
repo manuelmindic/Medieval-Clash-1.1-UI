@@ -346,7 +346,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 8
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &246629647
 GameObject:
   m_ObjectHideFlags: 0
@@ -580,7 +580,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &266090158
 GameObject:
   m_ObjectHideFlags: 0
@@ -677,7 +677,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 10
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &291210007
 GameObject:
   m_ObjectHideFlags: 0
@@ -774,7 +774,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &319125078
 GameObject:
   m_ObjectHideFlags: 0
@@ -871,7 +871,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 6
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &324992796
 GameObject:
   m_ObjectHideFlags: 0
@@ -968,7 +968,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 2
   _defense: 0
-  _manaCost: 0
+  _manaCost: 1
 --- !u!1 &359881273
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,7 +1249,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 12
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &444800209
 GameObject:
   m_ObjectHideFlags: 0
@@ -1480,7 +1480,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 8
   _defense: 0
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &547721973
 GameObject:
   m_ObjectHideFlags: 0
@@ -1577,7 +1577,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 10
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &567573364
 GameObject:
   m_ObjectHideFlags: 0
@@ -1674,7 +1674,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 10
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &581452303
 GameObject:
   m_ObjectHideFlags: 0
@@ -1771,7 +1771,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 8
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &596708184
 GameObject:
   m_ObjectHideFlags: 0
@@ -1868,7 +1868,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 4
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &640133914
 GameObject:
   m_ObjectHideFlags: 0
@@ -1965,7 +1965,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 5
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &668985010
 GameObject:
   m_ObjectHideFlags: 0
@@ -2062,7 +2062,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 2
   _defense: 0
-  _manaCost: 0
+  _manaCost: 1
 --- !u!1 &733997178
 GameObject:
   m_ObjectHideFlags: 0
@@ -2159,7 +2159,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 4
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &746356836
 GameObject:
   m_ObjectHideFlags: 0
@@ -2256,7 +2256,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 8
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &955303522
 GameObject:
   m_ObjectHideFlags: 0
@@ -2487,7 +2487,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &1024063379
 GameObject:
   m_ObjectHideFlags: 0
@@ -2584,7 +2584,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 5
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1027843417
 GameObject:
   m_ObjectHideFlags: 0
@@ -2681,7 +2681,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 6
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1066828127
 GameObject:
   m_ObjectHideFlags: 0
@@ -2778,7 +2778,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 12
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &1113041485
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,7 +2875,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 8
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &1175142894
 GameObject:
   m_ObjectHideFlags: 0
@@ -2972,7 +2972,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 5
 --- !u!1 &1186244461
 GameObject:
   m_ObjectHideFlags: 0
@@ -3069,7 +3069,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 15
   _defense: 0
-  _manaCost: 0
+  _manaCost: 5
 --- !u!1 &1234410389
 GameObject:
   m_ObjectHideFlags: 0
@@ -3353,7 +3353,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 10
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &1273525833
 GameObject:
   m_ObjectHideFlags: 0
@@ -3685,7 +3685,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 7
   _defense: 0
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &1322134503
 GameObject:
   m_ObjectHideFlags: 0
@@ -3782,7 +3782,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &1345480758
 GameObject:
   m_ObjectHideFlags: 0
@@ -4013,7 +4013,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 7
   _defense: 0
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &1431135898
 GameObject:
   m_ObjectHideFlags: 0
@@ -4368,7 +4368,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 1
   _defense: 0
-  _manaCost: 0
+  _manaCost: 1
 --- !u!1 &1533619125
 GameObject:
   m_ObjectHideFlags: 0
@@ -4465,7 +4465,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 1
   _defense: 0
-  _manaCost: 0
+  _manaCost: 1
 --- !u!1 &1574080058
 GameObject:
   m_ObjectHideFlags: 0
@@ -4562,7 +4562,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 4
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1583599062
 GameObject:
   m_ObjectHideFlags: 0
@@ -4736,7 +4736,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 10
   _defense: 0
-  _manaCost: 0
+  _manaCost: 4
 --- !u!61 &1606001203
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -4930,7 +4930,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1651147782
 GameObject:
   m_ObjectHideFlags: 0
@@ -5027,7 +5027,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 4
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1720071935
 GameObject:
   m_ObjectHideFlags: 0
@@ -5124,7 +5124,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 6
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1723993943
 GameObject:
   m_ObjectHideFlags: 0
@@ -5493,7 +5493,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 5
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1915897327
 GameObject:
   m_ObjectHideFlags: 0
@@ -5822,7 +5822,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 10
-  _manaCost: 0
+  _manaCost: 4
 --- !u!1 &1991413887
 GameObject:
   m_ObjectHideFlags: 0
@@ -5919,7 +5919,7 @@ MonoBehaviour:
   _typeOfCard: 1
   _damage: 0
   _defense: 6
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &1996186396
 GameObject:
   m_ObjectHideFlags: 0
@@ -6066,7 +6066,7 @@ MonoBehaviour:
   _typeOfCard: 2
   _damage: 0
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1 &2039867624
 GameObject:
   m_ObjectHideFlags: 0
@@ -6296,7 +6296,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 8
   _defense: 0
-  _manaCost: 0
+  _manaCost: 3
 --- !u!1 &2111427231
 GameObject:
   m_ObjectHideFlags: 0
@@ -6393,7 +6393,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 15
   _defense: 0
-  _manaCost: 0
+  _manaCost: 5
 --- !u!1 &2123707162
 GameObject:
   m_ObjectHideFlags: 0
@@ -6490,7 +6490,7 @@ MonoBehaviour:
   _typeOfCard: 0
   _damage: 5
   _defense: 0
-  _manaCost: 0
+  _manaCost: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
