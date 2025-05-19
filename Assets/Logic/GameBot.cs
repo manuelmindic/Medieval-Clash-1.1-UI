@@ -91,6 +91,7 @@ public class GameBot : MonoBehaviour
         _gameNameText.SetText(_gameName);
         
         _deck.Shuffle();
+        
         for (int i = 0; i < 5; i++)
         {
             Card drawnCard = _deck.DrawCard();

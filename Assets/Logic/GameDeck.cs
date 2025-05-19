@@ -31,9 +31,13 @@ public class GameDeck : MonoBehaviour
 
     public Card DrawCard()
     {
+        if (_deck == null || _deck.Count == 0)
+        {
+            return null;
+        }
+            
         Card drawnCard = _deck.First();
-        Shuffle();
-
+        _deck.RemoveAt(0);
         return drawnCard;
     }
 
