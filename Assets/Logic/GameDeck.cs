@@ -31,11 +31,9 @@ public class GameDeck : MonoBehaviour
 
     public Card DrawCard()
     {
-        if (_deck == null || _deck.Count == 0)
-        {
-            return null;
-        }
-            
+        if (_deck.Count == 0)
+            throw new InvalidOperationException("Cannot draw from an empty deck.");
+
         Card drawnCard = _deck.First();
         _deck.RemoveAt(0);
         return drawnCard;

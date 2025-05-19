@@ -80,6 +80,7 @@ public class GameBot : MonoBehaviour
         int turn = 1;
 
         int PlayerName = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
+        string gamename = _gameNameText.text;
 
         switch (PlayerName)
         {
@@ -99,7 +100,7 @@ public class GameBot : MonoBehaviour
 
         int BotName = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
 
-        switch (PlayerName)
+        switch (BotName)
         {
             case 1:
                 _bot.Name = "Minimax";
@@ -128,10 +129,17 @@ public class GameBot : MonoBehaviour
         
         for (int i = 0; i < 5; i++)
         {
-            Card drawnCard = _deck.DrawCard();
-            _player.UserDeck.Add(drawnCard);
-            drawnCard = _deck.DrawCard();
-            _bot.UserDeck.Add(drawnCard);
+            try
+            {
+                Card drawnCard = _deck.DrawCard();
+                _player.UserDeck.Add(drawnCard);
+                drawnCard = _deck.DrawCard();
+                _bot.UserDeck.Add(drawnCard);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError("Failed to draw card: " + ex.Message);
+            }
         }
 
         printUserCards(_player, turn);
@@ -206,13 +214,20 @@ public class GameBot : MonoBehaviour
 
             userStatsLogic(_bot);
             hasUserPickedCard = false;
-            if (checkIfWon(_player, _bot, turn))
+            if (checkIfWon(_player, _bot, turn, gamename))
                 yield break;
 
-            if (_player.UserDeck.Count != 7)
-                _player.UserDeck.Add(_deck.DrawCard());
-            if (_bot.UserDeck.Count != 7)
-                _bot.UserDeck.Add(_deck.DrawCard());
+            try
+            {
+                if (_player.UserDeck.Count != 7)
+                    _player.UserDeck.Add(_deck.DrawCard());
+                if (_bot.UserDeck.Count != 7)
+                    _bot.UserDeck.Add(_deck.DrawCard());
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError("Failed to draw card: " + ex.Message);
+            }
 
             turn++;
 
@@ -280,14 +295,21 @@ public class GameBot : MonoBehaviour
 
             userStatsLogic(_player);
 
-            if (checkIfWon(_player, _bot, turn))
+            if (checkIfWon(_player, _bot, turn, gamename))
                 yield break;
 
 
-            if (_player.UserDeck.Count != 7)
-                _player.UserDeck.Add(_deck.DrawCard());
-            if (_bot.UserDeck.Count != 7)
-                _bot.UserDeck.Add(_deck.DrawCard());
+            try
+            {
+                if (_player.UserDeck.Count != 7)
+                    _player.UserDeck.Add(_deck.DrawCard());
+                if (_bot.UserDeck.Count != 7)
+                    _bot.UserDeck.Add(_deck.DrawCard());
+            }
+            catch (InvalidOperationException ex)
+            {
+                Debug.LogError("Failed to draw card: " + ex.Message);
+            }
 
             turn++;
             hasUserPickedCard = false;
@@ -342,13 +364,14 @@ public class GameBot : MonoBehaviour
         yield return new WaitForSeconds(seconds);
     }
 
-    public bool checkIfWon(User user1, User user2, int turn)
+    public bool checkIfWon(User user1, User user2, int turn, string gamename)
     {
 
         if (user1.HealthPoints <= 0)
         {
             _finished = true;
             MetricsState metricsState = new MetricsState();
+            metricsState.gamename = gamename;
             metricsState.turns = turn;
             metricsState.winner = user2.Name;
             metricsState.loser = user1.Name;
@@ -359,6 +382,7 @@ public class GameBot : MonoBehaviour
         {
             _finished = true;
             MetricsState metricsState = new MetricsState();
+            metricsState.gamename = gamename;
             metricsState.turns = turn;
             metricsState.winner = user1.Name;
             metricsState.loser = user2.Name;
@@ -371,6 +395,7 @@ public class GameBot : MonoBehaviour
     [System.Serializable]
     public class MetricsState
     {
+        public string gamename;
         public int turns;
         public string winner;
         public string loser;
