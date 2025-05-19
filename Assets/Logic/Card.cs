@@ -11,8 +11,9 @@ public class Card : MonoBehaviour
     public int _damage;
     public int _defense;
     public int _manaCost;
+    public int _duration;
 
-    public Card(string imageFileName, string name, int price, TypeOfCard typeOfCard, int damage, int defense, int manaCost)
+    public Card(string imageFileName, string name, int price, TypeOfCard typeOfCard, int damage, int defense, int manaCost, int duration)
     {
         _imageFileName = imageFileName;
         _name = name;
@@ -21,6 +22,7 @@ public class Card : MonoBehaviour
         _damage = damage;
         _defense = defense;
         _manaCost = manaCost;
+        _duration = duration;
     }
 
     public string ImageFileName { get => _imageFileName; set => _imageFileName = value; }
@@ -30,9 +32,10 @@ public class Card : MonoBehaviour
     public int Damage { get => _damage; set => _damage = value; }
     public int Defense { get => _defense; set => _defense = value; }
     public int ManaCost { get => _manaCost; set => _manaCost = value; }
+    public int Duration { get => _duration; set => _duration = value; }
 
     public override string ToString()
     {
-        return "Name: " + _name + "\nPrice: " + _price + "\nType of Card: " + _typeOfCard.ToString() + "\nDamage: " + _damage + "\nDefense: " + _defense + "\nMana Costs: " + _manaCost + "\n";
+        return "Name: " + _name + "\nPrice: " + _price + "\nType of Card: " + _typeOfCard.ToString() + "\nDamage: " + _damage + "\nDefense: " + _defense + "\nMana Costs: " + _manaCost + "\nDuration: " + _duration + "\n";
     }
 }
