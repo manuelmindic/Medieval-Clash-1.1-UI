@@ -23,7 +23,7 @@ public class SimUser
             ManaPoints = this.ManaPoints,
             Money = this.Money,
             UserDeck = this.UserDeck.Select(c => c.Clone()).ToList(),
-            ActiveBuffs = this.ActiveBuffs.Select(b => new Buff(b.Type, b.Value, b.Duration)).ToList()
+            ActiveBuffs = this.ActiveBuffs.Select(b => b.Clone()).ToList()
         };
     }
 }

@@ -42,4 +42,9 @@ public class Card : MonoBehaviour
     {
         return "Name: " + _name + "\nPrice: " + _price + "\nType of Card: " + _typeOfCard.ToString() + "\nDamage: " + _damage + "\nDefense: " + _defense + "\nMana Costs: " + _manaCost + "\nDuration: " + _duration + "\nEffect Value: " + _effectValue + "\n";
     }
+
+    public Card Clone()
+    {
+        return (Card)this.MemberwiseClone();
+    }
 }

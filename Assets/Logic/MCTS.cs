@@ -1,23 +1,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 //MCTS
-
 public class MCTS
 {
-    private const int simulationCount = 2500;
+    private const int simulationCount = 1500;
     private Random _random = new Random();
 
-    public SimCard MCTSFindBestMove(SimUser bot, SimUser player, SimCard placedCard, bool isBotCountering, bool botTurn)
+    public SimCard MCTSFindBestMove(GameState rootState, bool isBotCountering, bool botTurn)
     {
-        var rootNode = new MCTSNode(bot, player, placedCard);
+        var rootNode = new MCTSNode(rootState);
 
         for (int i = 0; i < simulationCount; i++)
         {
             var selectedNode = MCTSSelectNode(rootNode);
             var expandedNode = MCTSExpandNode(selectedNode, isBotCountering, botTurn);
-            var result = MCTSSimulate(expandedNode, isBotCountering, botTurn, placedCard);
+            var result = MCTSSimulate(expandedNode, isBotCountering, botTurn);
             MCTSBackpropagate(expandedNode, result);
         }
 
@@ -37,55 +37,47 @@ public class MCTS
     // Expansion Phase - Mögliche Moves und Child Knoten werden geadded
     private MCTSNode MCTSExpandNode(MCTSNode node, bool isCountering, bool botTurn)
     {
-        var currentPlayer = botTurn ? node.Bot : node.Player;
-        var validMoves = node.GetValidMoves(currentPlayer, botTurn, isCountering);
-
+        var validMoves = node.GetValidMoves(botTurn, isCountering);
         foreach (var move in validMoves)
         {
-            var child = new MCTSNode(node.Bot.Clone(), node.Player.Clone(), move, node);
-            node.Children.Add(child);
+            var clonedState = node.State.Clone();
+            SimulateMove(clonedState, botTurn, move, isCountering, null);
+            clonedState.History.Add(clonedState.DeepCopy()); // Log full snapshot
+            node.Children.Add(new MCTSNode(clonedState, move, node));
         }
 
         return node.Children.Any() ? node.Children[_random.Next(node.Children.Count)] : node;
     }
 
-    private double MCTSSimulate(MCTSNode node, bool isBotCountering, bool botTurn, SimCard opponentCard)
+    private double MCTSSimulate(MCTSNode node, bool isBotCountering, bool botTurn)
     {
-        var simBot = node.Bot.Clone();
-        var simPlayer = node.Player.Clone();
+        GameState sim = node.State.Clone();
         bool isBotTurn = botTurn;
-        SimCard damageCard = opponentCard;
+        SimCard lastCard = node.Move;
         int turns = 0;
 
-        while (!IsGameOver(simBot.HealthPoints, simPlayer.HealthPoints) && turns++ < 200)
+        while (!IsGameOver(sim.botHealth, sim.playerHealth) && turns++ < 200)
         {
-            var currentUser = isBotTurn ? simBot : simPlayer;
-            var validMoves = node.GetValidMoves(currentUser, isBotTurn, isBotCountering);
+            sim.AdvanceTurn();
+
+            var currentHand = isBotTurn ? sim.botHand : sim.playerHand;
+            var currentMana = isBotTurn ? sim.botMana : sim.playerMana;
+            var validMoves = currentHand.Where(card => MCTSNode.IsValidMove(card, isBotTurn, isBotCountering) && card.ManaCost <= currentMana).ToList();
+
             if (!validMoves.Any()) break;
 
             var move = validMoves[_random.Next(validMoves.Count)];
-            if (currentUser.ManaPoints < move.ManaCost) continue;
+            SimulateMove(sim, isBotTurn, move, isBotCountering, lastCard);
 
-            if (isBotTurn)
-            {
-                SimulateMove(simBot, simPlayer, move, isBotCountering, damageCard);
-                isBotCountering = !isBotCountering;
-                isBotTurn = !isBotTurn;
-            }
-            else
-            {
-                SimulateMove(simPlayer, simBot, move, isBotCountering, damageCard);
-                isBotCountering = !isBotCountering;
-                isBotTurn = !isBotTurn;
-            }
+            sim.History.Add(sim.DeepCopy());
 
-            damageCard = move;
+            lastCard = move;
+            isBotTurn = !isBotTurn;
+            isBotCountering = !isBotCountering;
         }
 
-        return EvaluateGameStateMCTS(simBot, simPlayer);
+        return EvaluateGameStateMCTS(sim);
     }
-
-
 
     // Backpropagation Phase - Update die Knoten
     private void MCTSBackpropagate(MCTSNode node, double result)
@@ -114,30 +106,71 @@ public class MCTS
         return (node.Wins / node.Visits) + Math.Sqrt(2 * Math.Log(totalVisits) / node.Visits);
     }
 
-    private void SimulateMove(SimUser actor, SimUser opponent, SimCard card, bool isCountering, SimCard opponentCard)
+    private void SimulateMove(GameState state, bool isBotTurn, SimCard card, bool isCountering, SimCard opponentCard)
     {
-        if (actor.ManaPoints < card.ManaCost) return;
-        actor.ManaPoints -= card.ManaCost;
+        if (isBotTurn)
+        {
+            state.botMana -= card.ManaCost;
+            state.botHand.Remove(card);
+        }
+        else
+        {
+            state.playerMana -= card.ManaCost;
+            state.playerHand.Remove(card);
+        }
 
         switch (card.TypeOfCard)
         {
             case TypeOfCard.Attack:
-                opponent.HealthPoints -= card.Damage;
+                if (isBotTurn)
+                    state.last_player_damage = card.Damage;
+                else
+                    state.last_bot_damage = card.Damage;
                 break;
+
             case TypeOfCard.Defense:
-                if (isCountering && opponentCard != null && opponentCard.TypeOfCard == TypeOfCard.Attack)
+                int incoming = isBotTurn ? state.last_bot_damage : state.last_player_damage;
+                int defense = isBotTurn
+                    ? state.GetEffectiveBotDefense(card.Defense)
+                    : state.GetEffectivePlayerDefense(card.Defense);
+
+                int damage = CombatUtils.CalculateNetDamage(incoming, defense);
+                if (isBotTurn)
+                    state.botHealth -= damage;
+                else
+                    state.playerHealth -= damage;
+
+                state.last_bot_damage = 0;
+                state.last_player_damage = 0;
+                break;
+
+            case TypeOfCard.Special:
+                var match = Regex.Match(card.Name, @"(HP|MP|GP)(\d+)");
+                if (!match.Success) return;
+
+                int value = int.Parse(match.Groups[2].Value);
+                switch (match.Groups[1].Value)
                 {
-                    actor.HealthPoints -= Math.Max(0, opponentCard.Damage - card.Defense);
+                    case "HP":
+                        if (isBotTurn) state.botHealth += value;
+                        else state.playerHealth += value;
+                        break;
+                    case "MP":
+                        if (isBotTurn) state.botMana += value;
+                        else state.playerMana += value;
+                        break;
+                    case "GP":
+                        if (isBotTurn) state.botMoney += value;
+                        else state.playerMoney += value;
+                        break;
                 }
                 break;
-            case TypeOfCard.Special:
-                if (card.Name.StartsWith("HP")) actor.HealthPoints += int.Parse(card.Name.Substring(2));
-                if (card.Name.StartsWith("MP")) actor.ManaPoints += int.Parse(card.Name.Substring(2));
-                if (card.Name.StartsWith("GP")) actor.Money += int.Parse(card.Name.Substring(2));
+
+            case TypeOfCard.Buff:
+            case TypeOfCard.Debuff:
+                state.ApplyBuffCard(card, isBotTurn);
                 break;
         }
-
-        actor.UserDeck.Remove(card);
     }
 
     private bool IsGameOver(int hp1, int hp2)
@@ -145,13 +178,24 @@ public class MCTS
         return hp1 <= 0 || hp2 <= 0;
     }
 
-    private double EvaluateGameStateMCTS(SimUser player1, SimUser player2)
+    private double EvaluateGameStateMCTS(GameState state)
     {
-        double score = 0.0;
-        score += (player1.HealthPoints - player2.HealthPoints);
-        score += (player1.UserDeck.Count - player2.UserDeck.Count) * 0.5;
-        score += (CountCardsOfType(player1, TypeOfCard.Special) - CountCardsOfType(player2, TypeOfCard.Special)) * 0.75;
-        score += (CountCardsOfType(player1, TypeOfCard.Defense) - CountCardsOfType(player2, TypeOfCard.Defense)) * 0.3;
+        double score = 0;
+        score += (state.botHealth - state.playerHealth);
+        score += (state.botHand.Count - state.playerHand.Count) * 0.5;
+        score += (state.botMana - state.playerMana) * 0.2;
+
+        score += state.botBuffs.Sum(b => b.IsDebuff ? -b.Value : b.Value);
+        score -= state.playerBuffs.Sum(b => b.IsDebuff ? -b.Value : b.Value);
+
+        // Use historical trend
+        if (state.History.Count > 1)
+        {
+            var first = state.History[0];
+            score += (state.botHealth - first.botHealth) * 0.3;
+            score += (state.botMana - first.botMana) * 0.2;
+        }
+
         return score;
     }
 
@@ -160,37 +204,36 @@ public class MCTS
         return user.UserDeck.Count(c => c.TypeOfCard == type);
     }
 
-    public static bool IsValidMove(SimCard card, bool isBotTurn, bool isCountering)
-    {
-        return card.ManaCost >= 0 &&
-               (isCountering ? card.TypeOfCard == TypeOfCard.Defense :
-                               card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special);
-    }
-
-
     public class MCTSNode
     {
-        public SimUser Bot;
-        public SimUser Player;
+        public GameState State;
         public SimCard Move;
         public double Wins;
         public int Visits;
         public List<MCTSNode> Children = new List<MCTSNode>();
         public MCTSNode Parent;
 
-        public MCTSNode(SimUser bot, SimUser player, SimCard move = null, MCTSNode parent = null)
+        public MCTSNode(GameState state, SimCard move = null, MCTSNode parent = null)
         {
-            Bot = bot;
-            Player = player;
+            State = state;
             Move = move;
             Parent = parent;
         }
 
-        public List<SimCard> GetValidMoves(SimUser user, bool isBotTurn, bool isCountering)
+        public List<SimCard> GetValidMoves(bool isBotTurn, bool isCountering)
         {
-            return user.UserDeck
-                .Where(card => MCTS.IsValidMove(card, isBotTurn, isCountering) && card.ManaCost <= user.ManaPoints)
-                .ToList();
+            var hand = isBotTurn ? State.botHand : State.playerHand;
+            int mana = isBotTurn ? State.botMana : State.playerMana;
+
+            return hand.Where(card => IsValidMove(card, isBotTurn, isCountering) && card.ManaCost <= mana).ToList();
+        }
+
+        public static bool IsValidMove(SimCard card, bool isBotTurn, bool isCountering)
+        {
+            return card.ManaCost >= 0 &&
+                   (isCountering ? card.TypeOfCard == TypeOfCard.Defense :
+                                   card.TypeOfCard == TypeOfCard.Attack || card.TypeOfCard == TypeOfCard.Special || card.TypeOfCard == TypeOfCard.Buff || card.TypeOfCard == TypeOfCard.Debuff);
         }
     }
 }
+

@@ -73,7 +73,8 @@ public class GameBot : MonoBehaviour
             HealthPoints = user.HealthPoints,
             ManaPoints = user.ManaPoints,
             Money = user.Money,
-            UserDeck = user.UserDeck.Select(c => ConvertToSimCard(c)).ToList()
+            UserDeck = user.UserDeck.Select(c => ConvertToSimCard(c)).ToList(),
+            ActiveBuffs = user.ActiveBuffs.Select(b => new Buff(b.Type, b.Value, b.Duration, b.IsDebuff)).ToList()
         };
     }
 
@@ -86,7 +87,8 @@ public class GameBot : MonoBehaviour
             Damage = card.Damage,
             Defense = card.Defense,
             ManaCost = card.ManaCost,
-            Duration = card.Duration
+            Duration = card.Duration,
+            EffectValue = card.EffectValue
         };
     }
 
@@ -184,6 +186,8 @@ public class GameBot : MonoBehaviour
 
         while (!_finished)
         {
+            CombatUtils.ApplyStartOfTurnBuffs(_player, _bot);
+            CombatUtils.ApplyStartOfTurnBuffs(_bot, _player);
             _player.ManaPoints = Math.Min(_player.ManaPoints + 1, _player.MaxMana);
             _bot.ManaPoints = Math.Min(_bot.ManaPoints + 1, _bot.MaxMana);
             TextMeshProUGUI hiddenText = _hiddenField.GetComponentInChildren<TextMeshProUGUI>();
@@ -282,6 +286,8 @@ public class GameBot : MonoBehaviour
             printUserCards(_bot, turn);
 
             //New Turn (BOT FIRST)
+            CombatUtils.ApplyStartOfTurnBuffs(_player, _bot);
+            CombatUtils.ApplyStartOfTurnBuffs(_bot, _player);
 
             SimCard bot3SimCard = null;
             Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
@@ -416,7 +422,7 @@ public class GameBot : MonoBehaviour
         if (user.ManaPoints < card.ManaCost)
         {
             Debug.Log("Not enough mana for this card.");
-            return; 
+            return;
         }
 
         user.ManaPoints -= card.ManaCost;
@@ -428,31 +434,60 @@ public class GameBot : MonoBehaviour
             _placedCardUser = user;
         }
 
-
-        if (card.TypeOfCard.Equals(TypeOfCard.Special))
+        if (card.TypeOfCard == TypeOfCard.Special)
         {
-            Match match = Regex.Match(card.Name, @"(\D+)(\d+)");
-
-            string prefix = match.Groups[1].Value;
-            int number = int.Parse(match.Groups[2].Value);
-
-            // SELL and BUY needs to be added
-            if (prefix == "HP")
-            {
-                user.HealthPoints += number;
-            }
-            if (prefix == "MP")
-            {
-                user.ManaPoints += number;
-            }
-            if (prefix == "GP")
-            {
-                user.Money += number;
-            }
-
-            _placedCard = card;
-            _placedCardUser = user;
+            ApplySpecialCard(user, card);
         }
+
+        if (card.TypeOfCard == TypeOfCard.Buff || card.TypeOfCard == TypeOfCard.Debuff)
+        {
+            bool isDebuff = card.TypeOfCard == TypeOfCard.Debuff;
+            User target = isDebuff ? (user == _player ? _bot : _player) : user;
+            Buff parsedBuff = ParseBuffFromCardName(card.Name);
+            if (parsedBuff != null)
+            {
+                parsedBuff.IsDebuff = isDebuff;
+                target.ActiveBuffs.Add(parsedBuff);
+                Debug.Log($"{card.Name} applied to {target.Name}: {parsedBuff.Type}, {parsedBuff.Value}, {parsedBuff.Duration} turns");
+            }
+        }
+    }
+
+    private void ApplySpecialCard(User user, Card card)
+    {
+        Match match = Regex.Match(card.Name, @"(HP|MP|GP)(\\d+)");
+        if (!match.Success) return;
+
+        string prefix = match.Groups[1].Value;
+        int number = int.Parse(match.Groups[2].Value);
+
+        switch (prefix)
+        {
+            case "HP": user.HealthPoints += number; break;
+            case "MP": user.ManaPoints += number; break;
+            case "GP": user.Money += number; break;
+        }
+    }
+
+    private Buff ParseBuffFromCardName(string name)
+    {
+        Match match = Regex.Match(name, @"(DOT|HOT|DEF|ATK)[+-](\\d+)D(\\d+)");
+        if (!match.Success) return null;
+
+        BuffType type = match.Groups[1].Value switch
+        {
+            "DOT" => BuffType.DamageOverTime,
+            "HOT" => BuffType.HealOverTime,
+            "DEF" => BuffType.DefenseBoost,
+            "ATK" => BuffType.AttackBoost,
+            _ => throw new Exception("Unknown Buff")
+        };
+
+        int value = int.Parse(match.Groups[2].Value);
+        int duration = int.Parse(match.Groups[3].Value);
+
+        bool isDebuff = name.StartsWith("DOT") || name.StartsWith("ATK-");
+        return new Buff(type, value, duration, isDebuff);
     }
 
     public bool checkIfWon(User user1, User user2, int turn, string gamename)
@@ -526,6 +561,9 @@ public class GameBot : MonoBehaviour
     public void printUserCards(User user, int turn)
     {
         StringBuilder sb = new StringBuilder();
+        sb.AppendLine("Active Buffs:");
+        foreach (var buff in user.ActiveBuffs)
+            sb.AppendLine($"{buff.Type} ({(buff.IsDebuff ? "Debuff" : "Buff")}): {buff.Value} for {buff.Duration} turns");
         sb.AppendLine($"[Turn {turn}] --- {user.Name}'s Deck ---");
 
         int inc = 0;
@@ -581,7 +619,7 @@ public class GameBot : MonoBehaviour
 
     public void PlaceCounter(User user, Card card)
     {
-        if (_placedCard != null && _placedCardUser != null && _placedCard.TypeOfCard.Equals(TypeOfCard.Attack))
+        if (_placedCard != null && _placedCardUser != null && _placedCard.TypeOfCard == TypeOfCard.Attack)
         {
             if (user.ManaPoints < card.ManaCost)
             {
@@ -591,10 +629,11 @@ public class GameBot : MonoBehaviour
 
             user.ManaPoints -= card.ManaCost;
             user.UserDeck.Remove(card);
-            if (_placedCard.Damage - card.Defense > 0)
-            {
-                user.HealthPoints -= (_placedCard.Damage - card.Defense);
-            }
+
+            int attack = CombatUtils.GetEffectiveAttack(_placedCard.Damage, _placedCardUser.ActiveBuffs);
+            int defense = CombatUtils.GetEffectiveDefense(card.Defense, user.ActiveBuffs);
+            int netDamage = CombatUtils.CalculateNetDamage(attack, defense);
+            user.HealthPoints -= netDamage;
         }
 
         _placedCard = null;

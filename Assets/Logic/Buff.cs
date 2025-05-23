@@ -8,14 +8,13 @@ public class Buff
     public BuffType Type;
     public int Value;
     public int Duration;
-
-    public Buff(BuffType type, int value, int duration)
-    {
-        Type = type;
-        Value = value;
-        Duration = duration;
-    }
+    public bool IsDebuff;
 
     public void Tick() => Duration--;
     public bool IsExpired => Duration <= 0;
+
+    public Buff Clone()
+    {
+        return new Buff { Type = this.Type, Value = this.Value, Duration = this.Duration, IsDebuff = this.IsDebuff };
+    }
 }

@@ -10,6 +10,7 @@ public class SimCard
     public int Defense;
     public int ManaCost;
     public int Duration;
+    public int EffectValue;
 
     public SimCard Clone()
     {
