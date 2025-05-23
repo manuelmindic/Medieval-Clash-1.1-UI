@@ -9,5 +9,7 @@ public enum TypeOfCard
     Special,
     Skip,
     Buy,
-    Sell
+    Sell,
+    Buff,
+    Debuff
 }
