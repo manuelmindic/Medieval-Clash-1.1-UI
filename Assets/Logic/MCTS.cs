@@ -134,21 +134,18 @@ public class MCTS
         }
         validTypes.Add(TypeOfCard.Defense);
 
-        // Filter deck for valid types and mana
         var filtered = possibleDeck
             .Where(c => validTypes.Contains(c.TypeOfCard) && (!GameSettings.UseManaSystem || c.ManaCost <= mana))
             .ToList();
 
-        if (!filtered.Any()) return new List<SimCard>(); // Nothing valid
+        if (!filtered.Any()) return new List<SimCard>();
 
-        // Precompute weights (Bayesian prior)
         var typeFrequencies = filtered
             .GroupBy(c => c.TypeOfCard)
             .ToDictionary(g => g.Key, g => g.Count());
 
         int total = typeFrequencies.Values.Sum();
 
-        // Sample cards by weighted probability
         var sampledHand = new List<SimCard>();
         for (int i = 0; i < Math.Min(maxHandSize, filtered.Count); i++)
         {
@@ -166,7 +163,6 @@ public class MCTS
                 }
             }
 
-            // Select a random card from the chosen type
             var candidates = filtered.Where(c => c.TypeOfCard == selectedType).ToList();
             var card = candidates[_random.Next(candidates.Count)];
             sampledHand.Add(card.Clone());
@@ -305,21 +301,17 @@ public class MCTS
     {
         double score = 0;
 
-        // Health and Mana Differential
         score += (state.botHealth - state.playerHealth) * 1.0;
         score += (state.botMana - state.playerMana) * 0.2;
 
-        // Hand Size Advantage
         score += (state.botHand.Count - state.playerHand.Count) * 0.3;
 
-        // Buff/Debuff Impact
         if (GameSettings.UseBuffDebuffCards)
         {
             score += state.botBuffs.Sum(b => b.IsDebuff ? -b.Value : b.Value) * 0.5;
             score -= state.playerBuffs.Sum(b => b.IsDebuff ? -b.Value : b.Value) * 0.5;
         }
 
-        // Historical Progress
         if (state.History.Count > 1)
         {
             var first = state.History[0];

@@ -116,12 +116,11 @@ public class Minimax
         if (depth == 0 || IsSimOver(state.botHealth, state.playerHealth))
             return EvalV1(state);
 
-        // Minimizer: Simulate player moves with sampling
+        // Minimizer
         if (phase == Phase.PlayerAttack || phase == Phase.PlayerCounter)
         {
             int minEval = int.MaxValue;
 
-            // Sample multiple times for probabilistic evaluation
             const int samples = 3;
             for (int i = 0; i < samples; i++)
             {
