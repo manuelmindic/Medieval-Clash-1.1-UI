@@ -4188,8 +4188,8 @@ MonoBehaviour:
   _name: Bot
   _rating: 1000
   _healthPoints: 20
-  _manaPoints: 50
-  _maxManaPoints: 0
+  _manaPoints: 10
+  _maxManaPoints: 20
   _money: 50
   _userDeck: []
   _activeBuffs: []
@@ -15092,7 +15092,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: -519.56165, y: 0, z: -397.48035, w: -154.10767}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -21276,6 +21276,26 @@ MonoBehaviour:
   - {fileID: 426989685}
   - {fileID: 823608638}
   - {fileID: 431697520}
+  - {fileID: 388905637}
+  - {fileID: 895544506}
+  - {fileID: 233347242}
+  - {fileID: 686172499}
+  - {fileID: 1724417176}
+  - {fileID: 1075774955}
+  - {fileID: 81014759}
+  - {fileID: 1001306576}
+  - {fileID: 137742473}
+  - {fileID: 1969634614}
+  - {fileID: 870421643}
+  - {fileID: 1345089688}
+  - {fileID: 2021701071}
+  - {fileID: 1744053932}
+  - {fileID: 128745563}
+  - {fileID: 187987466}
+  - {fileID: 2064424194}
+  - {fileID: 650694173}
+  - {fileID: 1493869517}
+  - {fileID: 2090966311}
 --- !u!1 &1792540363
 GameObject:
   m_ObjectHideFlags: 0
@@ -22540,7 +22560,6 @@ MonoBehaviour:
   userStats: {fileID: 1583599064}
   botStats: {fileID: 1469099237}
   backToStart: {fileID: 2039867626}
-  _depth: 4
   _hiddenField: {fileID: 1260380394}
   _winsOne: {fileID: 1006332971}
   _winsTwo: {fileID: 458937050}
@@ -24033,8 +24052,8 @@ MonoBehaviour:
   _name: Stefan
   _rating: 1000
   _healthPoints: 20
-  _manaPoints: 50
-  _maxManaPoints: 0
+  _manaPoints: 10
+  _maxManaPoints: 20
   _money: 50
   _userDeck: []
   _activeBuffs: []

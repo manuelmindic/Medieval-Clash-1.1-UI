@@ -155,13 +155,13 @@ public class Game : MonoBehaviour
 
             if ((algorithmus == 1))
             {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                botCard = new Minimax().BotDecideMove(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
+                //GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
+                //botCard = new Minimax().BotDecideMove(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
             }
             if ((algorithmus == 2))
             {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
+                //GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
+                //botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
             }
             if (algorithmus == 3)
             {
@@ -235,13 +235,13 @@ public class Game : MonoBehaviour
             algorithmus = PlayerPrefs.GetInt("Algorithmus", 1);
             if ((algorithmus == 1))
             {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                botCard = new Minimax().BotDecideMove(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
+                //GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
+               // botCard = new Minimax().BotDecideMove(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
             }
             if ((algorithmus == 2))
             {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
+                //GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
+                //botCard = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
             }
             if (algorithmus == 3)
             {

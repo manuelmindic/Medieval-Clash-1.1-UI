@@ -13,16 +13,21 @@ public static class CombatUtils
             {
                 case BuffType.DamageOverTime:
                     hp -= buff.Value;
+                    Debug.LogWarning($"[Buff Tick] DOT -{buff.Value} HP");
                     break;
                 case BuffType.HealOverTime:
                     hp += buff.Value;
+                    Debug.LogWarning($"[Buff Tick] HOT +{buff.Value} HP");
                     break;
             }
             buff.Tick();
             if (buff.IsExpired) expired.Add(buff);
         }
         foreach (var buff in expired)
+        {
             buffs.Remove(buff);
+            Debug.LogWarning($"[Buff Expired] {buff.Type}");
+        }
     }
 
     public static int GetEffectiveAttack(int baseAttack, List<Buff> buffs)

@@ -59,4 +59,15 @@ public class GameDeck : MonoBehaviour
             _deck[deckCount] = card;
         }
     }
+
+    public void FilterBuffDebuffCards()
+    {
+        if (PlayerPrefs.GetInt("ToggleBuffDebuffState", 1) == 0)
+        {
+            int beforeCount = _deck.Count;
+            _deck = _deck.Where(c => !c.name.StartsWith("Extra")).ToList();
+            int afterCount = _deck.Count;
+            Debug.Log($"[Deck Filter] Removed {beforeCount - afterCount} Buff/Debuff cards.");
+        }
+    }
 }

@@ -38,8 +38,6 @@ public class GameBot : MonoBehaviour
     public Button botStats;
     public Button backToStart;
 
-    public int _depth = 4;
-
     public TMP_Text _hiddenField;
     public TMP_Text _winsOne;
     public TMP_Text _winsTwo;
@@ -56,6 +54,16 @@ public class GameBot : MonoBehaviour
     private int lastBotCards;
     private int lastPlayerMana;
     private int lastBotMana;
+
+    private List<Card> _remainingDeckForBot;
+    private List<Card> _remainingDeckForPlayer;
+    private List<Card> _playedCards = new List<Card>();
+
+    private double playerTotalTime = 0;
+    private int playerMoveCount = 0;
+
+    private double botTotalTime = 0;
+    private int botMoveCount = 0;
 
     private void Start()
     {
@@ -80,16 +88,7 @@ public class GameBot : MonoBehaviour
 
     private SimCard ConvertToSimCard(Card card)
     {
-        return new SimCard
-        {
-            Name = card.Name,
-            TypeOfCard = card.TypeOfCard,
-            Damage = card.Damage,
-            Defense = card.Defense,
-            ManaCost = card.ManaCost,
-            Duration = card.Duration,
-            EffectValue = card.EffectValue
-        };
+        return new SimCard(card);
     }
 
     IEnumerator SimulateMultipleGames(float count)
@@ -106,6 +105,13 @@ public class GameBot : MonoBehaviour
             _player = Instantiate(playerTemplate);
             _bot = Instantiate(botTemplate);
             _deck = Instantiate(deckTemplate);
+            _deck.FilterBuffDebuffCards();
+
+            playerTotalTime = 0;
+            playerMoveCount = 0;
+            botTotalTime = 0;
+            botMoveCount = 0;
+
             _finished = false;
 
             yield return StartCoroutine(StartGame());
@@ -124,309 +130,353 @@ public class GameBot : MonoBehaviour
 
     private Card MatchSimCardToRealCard(SimCard simCard, User user)
     {
-        return user.UserDeck.FirstOrDefault(c => c.Name == simCard.Name);
+        return user.UserDeck.FirstOrDefault(c =>
+            c.Name == simCard.Name &&
+            c.TypeOfCard == simCard.TypeOfCard &&
+            c.ManaCost == simCard.ManaCost &&
+            c.Damage == simCard.Damage &&
+            c.Defense == simCard.Defense);
     }
 
     IEnumerator StartGame()
     {
         int turn = 1;
-
-        int PlayerName = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
         string gamename = _gameNameText.text;
+        SetBotNames();
 
-        switch (PlayerName)
-        {
-            case 1: _player.Name = "Minimax"; break;
-            case 2: _player.Name = "Minimax Alpha-Beta"; break;
-            case 3: _player.Name = "MCTS"; break;
-            default: _player.Name = "Unknown"; break;
-        }
-
-        int BotName = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
-
-        switch (BotName)
-        {
-            case 1: _bot.Name = "Minimax"; break;
-            case 2: _bot.Name = "Minimax Alpha-Beta"; break;
-            case 3: _bot.Name = "MCTS"; break;
-            default: _bot.Name = "Unknown"; break;
-        }
-
-        TextMeshProUGUI userText = userStats.GetComponentInChildren<TextMeshProUGUI>();
-        userText.text = _player.Name;
-
-        TextMeshProUGUI botText = botStats.GetComponentInChildren<TextMeshProUGUI>();
-        botText.text = _bot.Name;
-
-        userStatsLogic(_player);
         _gameNameText.SetText(_gameName);
         
         _deck.Shuffle();
+        DealInitialCards();
 
-        for (int i = 0; i < 5; i++)
+        if (GameSettings.UseHiddenDecks)
         {
-            try
-            {
-                _player.UserDeck.Add(_deck.DrawCard());
-                _bot.UserDeck.Add(_deck.DrawCard());
-            }
-            catch (InvalidOperationException ex)
-            {
-                Debug.LogError("Failed to draw card: " + ex.Message);
-            }
+            _remainingDeckForBot = new List<Card>(_deck.Deck);
+            _remainingDeckForPlayer = new List<Card>(_deck.Deck);
+            _remainingDeckForBot.RemoveAll(card => _bot.UserDeck.Contains(card));
+            _remainingDeckForBot.RemoveAll(card => _playedCards.Contains(card));
+
+            _remainingDeckForPlayer.RemoveAll(card => _player.UserDeck.Contains(card));
+            _remainingDeckForPlayer.RemoveAll(card => _playedCards.Contains(card));
         }
+
+        InitStats();
+
+        userStatsLogic(_player);
+        userStatsLogic(_bot);
 
         printUserCards(_player, turn);
         printUserCards(_bot, turn);
 
-        _player.MaxMana = 20;
-        _bot.MaxMana = 20;
-        _player.ManaPoints = 10;
-        _bot.ManaPoints = 10;
-
         while (!_finished)
         {
-            CombatUtils.ApplyStartOfTurnBuffs(_player, _bot);
-            CombatUtils.ApplyStartOfTurnBuffs(_bot, _player);
-            _player.ManaPoints = Math.Min(_player.ManaPoints + 1, _player.MaxMana);
-            _bot.ManaPoints = Math.Min(_bot.ManaPoints + 1, _bot.MaxMana);
-            TextMeshProUGUI hiddenText = _hiddenField.GetComponentInChildren<TextMeshProUGUI>();
-            if (PlayerPrefs.GetInt("Deck", 1) == 1)
-            {
-                hiddenText.text = "Hidden: yes";
-            }
-            else
-            {
-                hiddenText.text = "Hidden: no";
-            }
+            ApplyTurnStartBuffs();
 
-            Card bot1Card = null;
-            SimCard bot1SimCard = null;
-            int Bot1algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
-            if ((Bot1algorithmus == 1))
-            {
-                GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
-                bot1Card = new Minimax().BotDecideMove(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
-            }
-            if ((Bot1algorithmus == 2))
-            {
-                GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
-                bot1Card = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
-            }
-            if (Bot1algorithmus == 3)
-            {
-                var simPlayer = ConvertToSimUser(_player);
-                var simBot = ConvertToSimUser(_bot);
-                bot1SimCard = new MCTS().MCTSFindBestMove(simPlayer, simBot, null, false, true);
-                bot1Card = bot1SimCard != null ? MatchSimCardToRealCard(bot1SimCard, _player) : _skipCard;
-            }
-            if (bot1Card != null)
-            {
-                PlaceCard(_player, bot1Card);
-            }
-            else if (bot1Card == null)
-            {
-                PlaceCard(_player, _skipCard);
-            }
-            printPlacedView();
+            SetHiddenText();
 
-            Card bot2Card = null;
-            SimCard bot2SimCard = null;
-            int Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
-
-            if ((Bot2algorithmus == 1))
-            {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                bot2Card = new Minimax().BotDecideMove(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
-            }
-            if ((Bot2algorithmus == 2))
-            {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, _placedCard.Damage, 0);
-                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
-            }
-            if (Bot2algorithmus == 3)
-            {
-                var simPlayer = ConvertToSimUser(_player);
-                var simBot = ConvertToSimUser(_bot);
-                var placedSimCard = ConvertToSimCard(_placedCard);
-                bot2SimCard = new MCTS().MCTSFindBestMove(simBot, simPlayer, placedSimCard, true, true);
-                bot2Card = bot2SimCard != null ? MatchSimCardToRealCard(bot2SimCard, _bot) : _skipCard;
-            }
-            if (bot2Card != null)
-            {
-                PlaceCounter(_bot, bot2Card);
-                printPlacedViewCounter(bot2Card);
-            }
-            else if (bot2Card == null)
-            {
-                PlaceCounter(_bot, _skipCard);
-                printPlacedViewCounter(_skipCard);
-            }
-
-            userStatsLogic(_bot);
-            hasUserPickedCard = false;
-            if (checkIfWon(_player, _bot, turn, gamename))
-                yield break;
-
-            try
-            {
-                if (_player.UserDeck.Count != 7)
-                    _player.UserDeck.Add(_deck.DrawCard());
-                if (_bot.UserDeck.Count != 7)
-                    _bot.UserDeck.Add(_deck.DrawCard());
-            }
-            catch (InvalidOperationException ex)
-            {
-                Debug.LogError("Failed to draw card: " + ex.Message);
-            }
-
+            yield return StartCoroutine(PlayTurn(_player, _bot, PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1), PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1), turn));
+            if (_finished) yield break;
             turn++;
+            DrawNewCards();
 
-            printUserCards(_player, turn);
-            printUserCards(_bot, turn);
-
-            //New Turn (BOT FIRST)
-            CombatUtils.ApplyStartOfTurnBuffs(_player, _bot);
-            CombatUtils.ApplyStartOfTurnBuffs(_bot, _player);
-
-            SimCard bot3SimCard = null;
-            Bot2algorithmus = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
-            if ((Bot2algorithmus == 1))
-            {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                bot2Card = new Minimax().BotDecideMove(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
-            }
-            if ((Bot2algorithmus == 2))
-            {
-                GameState gameState = new GameState(_bot._healthPoints, _player.HealthPoints, _bot.ManaPoints, _player.ManaPoints, _bot.Money, _player.Money, _bot.UserDeck, _player.UserDeck, 0, 0);
-                bot2Card = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotAttack, 4); // 4. player attack wichtig da
-            }
-            if (Bot2algorithmus == 3)
-            {
-                var simBot = ConvertToSimUser(_bot);
-                var simPlayer = ConvertToSimUser(_player);
-                bot3SimCard = new MCTS().MCTSFindBestMove(simBot, simPlayer, null, false, true);
-                bot2Card = bot3SimCard != null ? MatchSimCardToRealCard(bot3SimCard, _bot) : _skipCard;
-            }
-            if (bot2Card != null)
-            {
-                PlaceCard(_bot, bot2Card);
-            }
-            else if (bot2Card == null)
-            {
-                PlaceCard(_bot, _skipCard);
-            }
-
-            printPlacedView();
-
-            Bot1algorithmus = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
-            SimCard bot4SimCard = null;
-            if ((Bot1algorithmus == 1))
-            {
-                GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0 , 0);
-                bot1Card = new Minimax().BotDecideMove(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
-            }
-            if ((Bot1algorithmus == 2))
-            {
-                GameState gameState = new GameState(_player.HealthPoints, _bot._healthPoints, _player.ManaPoints, _bot.ManaPoints, _player.Money, _bot.Money, _player.UserDeck, _bot.UserDeck, 0, 0);
-                bot1Card = new Minimax().BotDecideMoveAlphaBeta(gameState, Phase.BotCounter, 3); // attack nicht wichtig da
-            }
-            if (Bot1algorithmus == 3)
-            {
-                var simPlayer = ConvertToSimUser(_player);
-                var simBot = ConvertToSimUser(_bot);
-                var placedSimCard = ConvertToSimCard(_placedCard);
-                bot4SimCard = new MCTS().MCTSFindBestMove(simPlayer, simBot, placedSimCard, true, true);
-                bot1Card = bot4SimCard != null ? MatchSimCardToRealCard(bot4SimCard, _player) : _skipCard;
-            }
-
-            if (bot1Card != null)
-            {
-                PlaceCounter(_player, bot1Card);
-                printPlacedViewCounter(bot1Card);
-            }
-            else if (bot1Card == null)
-            {
-                PlaceCounter(_player, _skipCard);
-                printPlacedViewCounter(_skipCard);
-            }
-
-            userStatsLogic(_player);
-
-            if (checkIfWon(_player, _bot, turn, gamename))
-                yield break;
-
-
-            try
-            {
-                if (_player.UserDeck.Count != 7)
-                    _player.UserDeck.Add(_deck.DrawCard());
-                if (_bot.UserDeck.Count != 7)
-                    _bot.UserDeck.Add(_deck.DrawCard());
-            }
-            catch (InvalidOperationException ex)
-            {
-                Debug.LogError("Failed to draw card: " + ex.Message);
-            }
-
+            yield return StartCoroutine(PlayTurn(_bot, _player, PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1), PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1), turn));
+            if (_finished) yield break;
             turn++;
-            hasUserPickedCard = false;
-
-            bool progressHappened =
-                _player.HealthPoints < lastPlayerHP ||
-                _bot.HealthPoints < lastBotHP ||
-                _player.UserDeck.Count != lastPlayerCards ||
-                _bot.UserDeck.Count != lastBotCards ||
-                _player.ManaPoints != lastPlayerMana ||
-                _bot.ManaPoints != lastBotMana;
-
-            if (progressHappened)
-            {
-                staleTurnCount = 0;
-            }
-            else
-            {
-                staleTurnCount++;
-            }
-
-            // check for stale
-            lastPlayerHP = _player.HealthPoints;
-            lastBotHP = _bot.HealthPoints;
-            lastPlayerCards = _player.UserDeck.Count;
-            lastBotCards = _bot.UserDeck.Count;
-            lastPlayerMana = _player.ManaPoints;
-            lastBotMana = _bot.ManaPoints;
-
-            if (staleTurnCount >= 10)
-            {
-                Debug.Log("Deadlock erkannt – Spiel wird als Unentschieden gewertet.");
-                MetricsState metricsState = new MetricsState
-                {
-                    gamename = _gameName,
-                    turns = turn,
-                    winner = "Draw",
-                    loser = "Draw"
-                };
-                allGameResults.Add(metricsState);
-                _finished = true;
-                yield break;
-            }
-
-            printUserCards(_player, turn);
-            printUserCards(_bot, turn);
+            DrawNewCards();
+            UpdateMana();
+            TrackStaleProgress(turn);
         }
+    }
+
+    void SetBotNames()
+    {
+        int PlayerName = PlayerPrefs.GetInt("AlgorithmusEinsBotVsBot", 1);
+        _player.Name = PlayerName == 1 ? "Minimax" : PlayerName == 2 ? "Minimax with Alpha-Beta" : "MCTS";
+
+        int BotName = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
+        _bot.Name = BotName == 1 ? "Minimax" : BotName == 2 ? "Minimax with Alpha-Beta" : "MCTS";
+
+        userStats.GetComponentInChildren<TextMeshProUGUI>().text = _player.Name;
+        botStats.GetComponentInChildren<TextMeshProUGUI>().text = _bot.Name;
+    }
+
+    void DealInitialCards()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            _player.UserDeck.Add(_deck.DrawCard());
+            _bot.UserDeck.Add(_deck.DrawCard());
+        }
+    }
+
+    void InitStats()
+    {
+        _player.MaxMana = 50;
+        _bot.MaxMana = 50;
+        _player.ManaPoints = 25;
+        _bot.ManaPoints = 25;
+    }
+
+    void ApplyTurnStartBuffs()
+    {
+        CombatUtils.ApplyStartOfTurnBuffs(_player.ActiveBuffs, ref _player._healthPoints);
+        CombatUtils.ApplyStartOfTurnBuffs(_bot.ActiveBuffs, ref _bot._healthPoints);
+    }
+
+    void UpdateMana()
+    {
+        if (GameSettings.UseManaSystem)
+        {
+            _player.ManaPoints = Math.Min(_player.ManaPoints + 2, _player.MaxMana);
+            _bot.ManaPoints = Math.Min(_bot.ManaPoints + 2, _bot.MaxMana);
+        }
+    }
+
+    void SetHiddenText()
+    {
+        _hiddenField.GetComponentInChildren<TextMeshProUGUI>().text =
+            $"Hidden Cards: {(GameSettings.UseHiddenDecks ? "yes" : "no")} " +
+            $"| Mana System: {(GameSettings.UseManaSystem ? "yes" : "no")} " +
+            $"| Buff/Debuff Cards: {(GameSettings.UseBuffDebuffCards ? "yes" : "no")}";
+    }
+
+    IEnumerator PlayTurn(User attacker, User defender, int attackerAlgo, int defenderAlgo, int turn)
+    {
+        Card attackCard = null;
+        Card counterCard = null;
+
+        if (attackerAlgo == 3)
+        {
+            yield return StartCoroutine(DecideCardMCTS(attacker, defender, false, true, Phase.BotAttack, card => attackCard = card));
+        }
+        else
+        {
+            attackCard = DecideCard(attacker, defender, attackerAlgo, false, true, Phase.BotAttack, 4);
+        }
+
+        PlaceCard(attacker, attackCard);
+        printPlacedView();
+
+        if (defenderAlgo == 3)
+        {
+            yield return StartCoroutine(DecideCardMCTS(defender, attacker, true, true, Phase.BotCounter, card => counterCard = card));
+        }
+        else
+        {
+            counterCard = DecideCard(defender, attacker, defenderAlgo, true, true, Phase.BotCounter, 3);
+        }
+
+        PlaceCounter(defender, counterCard);
+        printPlacedViewCounter(counterCard);
+
+        userStatsLogic(defender);
+        userStatsLogic(attacker);
+        hasUserPickedCard = false;
+
+        if (checkIfWon(attacker, defender, turn, _gameName))
+        {
+            _finished = true;
+            yield break;
+        }
+
+        printUserCards(attacker, turn);
+        printUserCards(defender, turn);
+    }
+
+    Card DecideCard(User self, User enemy, int algo, bool isCountering, bool isBotTurn, Phase phase, int depth)
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        Card resultCard = null;
+        SimCard sim = null;
+
+        GameState state = new GameState(
+             self.HealthPoints,
+             enemy.HealthPoints,
+             self.ManaPoints,
+             enemy.ManaPoints,
+             self.Money,
+             enemy.Money,
+             self.UserDeck,
+             GameSettings.UseHiddenDecks ? new List<Card>() : enemy.UserDeck,
+             isCountering ? _placedCard.Damage : 0,
+             0,
+             self.ActiveBuffs,
+             enemy.ActiveBuffs,
+             (self == _player) ? _remainingDeckForPlayer : _remainingDeckForBot
+             );
+
+        if (algo == 1)
+            sim = new Minimax().BotDecideMove(state, phase, depth);
+        else if (algo == 2)
+            sim = new Minimax().BotDecideMoveAlphaBeta(state, phase, depth);
+
+        stopwatch.Stop();
+        AddDecisionTime(self, stopwatch.Elapsed.TotalMilliseconds);
+
+
+        if (sim != null)
+        {
+            Card match = MatchSimCardToRealCard(sim, self);
+            resultCard = match ?? _skipCard;
+        }
+        else
+        {
+            Debug.LogWarning($"[{self.Name}] AI returned null SimCard, using _skipCard");
+            resultCard = _skipCard;
+        }
+
+        return resultCard;
+    }
+
+    IEnumerator DecideCardMCTS(User self, User enemy, bool isCountering, bool isBotTurn, Phase phase, Action<Card> onComplete)
+    {
+        GameState state = new GameState(
+             self.HealthPoints,
+             enemy.HealthPoints,
+             self.ManaPoints,
+             enemy.ManaPoints,
+             self.Money,
+             enemy.Money,
+             self.UserDeck,
+             GameSettings.UseHiddenDecks ? new List<Card>() : enemy.UserDeck,
+             isCountering ? _placedCard.Damage : 0,
+             0,
+             self.ActiveBuffs,
+             enemy.ActiveBuffs,
+             (self == _player) ? _remainingDeckForPlayer : _remainingDeckForBot
+             );
+
+        SimCard sim = null;
+        bool finished = false;
+
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+
+        var mctsRoutine = StartCoroutine(new MCTS().MCTSFindBestMoveCoroutine(state, phase, (SimCard result) =>
+        {
+            sim = result;
+            finished = true;
+        }));
+
+        float timeout = 5f;
+        float elapsed = 0f;
+
+        while (!finished && elapsed < timeout)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        stopwatch.Stop();
+        AddDecisionTime(self, stopwatch.Elapsed.TotalMilliseconds);
+
+        if (!finished)
+        {
+            Debug.LogWarning($"MCTS timeout for {self.Name}, using _skipCard fallback.");
+            StopCoroutine(mctsRoutine);
+            onComplete(_skipCard);
+        }
+        else
+        {
+            Card match = sim != null ? MatchSimCardToRealCard(sim, self) : null;
+            onComplete(match ?? _skipCard);
+            Debug.Log($"[MCTS Decision] For {self.Name}: {match?.Name ?? _skipCard.Name}");
+        }
+    }
+
+    void AddDecisionTime(User user, double timeMs)
+    {
+        if (user == _player)
+        {
+            playerTotalTime += timeMs;
+            playerMoveCount++;
+        }
+        else if (user == _bot)
+        {
+            botTotalTime += timeMs;
+            botMoveCount++;
+        }
+    }
+
+    void DrawNewCards()
+    {
+        try
+        {
+            if (_player.UserDeck.Count < 7)
+            {
+                Card drawn = _deck.DrawCard();
+                _player.UserDeck.Add(drawn);
+                if (GameSettings.UseHiddenDecks)
+                {
+                    _remainingDeckForPlayer.Remove(drawn);
+                }
+            }
+            if (_bot.UserDeck.Count < 7)
+            {
+                Card drawn = _deck.DrawCard();
+                _bot.UserDeck.Add(drawn);
+                if (GameSettings.UseHiddenDecks)
+                {
+                    _remainingDeckForBot.Remove(drawn);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogError("Draw failed: " + ex.Message);
+        }
+    }
+
+    void TrackStaleProgress(int turn)
+    {
+        bool progressHappened =
+            _player.HealthPoints < lastPlayerHP ||
+            _bot.HealthPoints < lastBotHP ||
+            _player.UserDeck.Count != lastPlayerCards ||
+            _bot.UserDeck.Count != lastBotCards ||
+            _player.ManaPoints != lastPlayerMana ||
+            _bot.ManaPoints != lastBotMana;
+
+        if (!progressHappened && ++staleTurnCount >= 10)
+        {
+            _finished = true;
+            Debug.Log("Deadlock erkannt – Spiel wird als Unentschieden gewertet.");
+            allGameResults.Add(new MetricsState { gamename = _gameName, turns = turn, winner = "Draw", loser = "Draw" });
+        }
+        else if (progressHappened) staleTurnCount = 0;
+
+        lastPlayerHP = _player.HealthPoints;
+        lastBotHP = _bot.HealthPoints;
+        lastPlayerCards = _player.UserDeck.Count;
+        lastBotCards = _bot.UserDeck.Count;
+        lastPlayerMana = _player.ManaPoints;
+        lastBotMana = _bot.ManaPoints;
     }
 
     public void PlaceCard(User user, Card card)
     {
-        if (user.ManaPoints < card.ManaCost)
+        if (GameSettings.UseManaSystem && user.ManaPoints < card.ManaCost)
         {
             Debug.Log("Not enough mana for this card.");
             return;
         }
 
-        user.ManaPoints -= card.ManaCost;
+        if (GameSettings.UseManaSystem)
+        {
+            user.ManaPoints -= card.ManaCost;
+        }
+
         user.UserDeck.Remove(card);
+        
+        if (GameSettings.UseHiddenDecks)
+        {
+            _playedCards.Add(card);
+
+            if (user == _player)
+                _remainingDeckForBot.Remove(card);
+            else if (user == _bot)
+                _remainingDeckForPlayer.Remove(card);
+        }
 
         if (_placedCard == null && _placedCardUser == null)
         {
@@ -439,7 +489,7 @@ public class GameBot : MonoBehaviour
             ApplySpecialCard(user, card);
         }
 
-        if (card.TypeOfCard == TypeOfCard.Buff || card.TypeOfCard == TypeOfCard.Debuff)
+        if ((card.TypeOfCard == TypeOfCard.Buff || card.TypeOfCard == TypeOfCard.Debuff) && GameSettings.UseBuffDebuffCards)
         {
             bool isDebuff = card.TypeOfCard == TypeOfCard.Debuff;
             User target = isDebuff ? (user == _player ? _bot : _player) : user;
@@ -455,7 +505,7 @@ public class GameBot : MonoBehaviour
 
     private void ApplySpecialCard(User user, Card card)
     {
-        Match match = Regex.Match(card.Name, @"(HP|MP|GP)(\\d+)");
+        Match match = Regex.Match(card.Name, @"(HP|MP|GP)(\d+)");
         if (!match.Success) return;
 
         string prefix = match.Groups[1].Value;
@@ -471,7 +521,7 @@ public class GameBot : MonoBehaviour
 
     private Buff ParseBuffFromCardName(string name)
     {
-        Match match = Regex.Match(name, @"(DOT|HOT|DEF|ATK)[+-](\\d+)D(\\d+)");
+        Match match = Regex.Match(name, @"(DOT|HOT|DEF|ATK)[+-]?(\d+)D(\d+)");
         if (!match.Success) return null;
 
         BuffType type = match.Groups[1].Value switch
@@ -492,37 +542,65 @@ public class GameBot : MonoBehaviour
 
     public bool checkIfWon(User user1, User user2, int turn, string gamename)
     {
-        TextMeshProUGUI onewin = _winsOne.GetComponentInChildren<TextMeshProUGUI>();
-        TextMeshProUGUI twowin = _winsTwo.GetComponentInChildren<TextMeshProUGUI>();
-        
         if (user1.HealthPoints <= 0)
         {
             _finished = true;
-            MetricsState metricsState = new MetricsState();
-            metricsState.gamename = gamename;
-            metricsState.turns = turn;
-            metricsState.winner = user2.Name;
-            metricsState.loser = user1.Name;
+            var metricsState = new MetricsState
+            {
+                gamename = gamename,
+                turns = turn,
+                winner = user2.Name,
+                winnerAvgTime = user2 == _player ? playerTotalTime / Math.Max(1, playerMoveCount) : botTotalTime / Math.Max(1, botMoveCount),
+                loser = user1.Name,
+                loserAvgTime = user1 == _player ? playerTotalTime / Math.Max(1, playerMoveCount) : botTotalTime / Math.Max(1, botMoveCount)
+            };
             allGameResults.Add(metricsState);
-            p2_win++;
-            twowin.text = $"Wins: {p2_win}";
+
+            if (user2 == _player)
+            {
+                p1_win++;
+                _winsOne.text = $"Wins: {p1_win}";
+            }
+            else if (user2 == _bot)
+            {
+                p2_win++;
+                _winsTwo.text = $"Wins: {p2_win}";
+            }
+
             return true;
         }
+
         if (user2.HealthPoints <= 0)
         {
             _finished = true;
-            MetricsState metricsState = new MetricsState();
-            metricsState.gamename = gamename;
-            metricsState.turns = turn;
-            metricsState.winner = user1.Name;
-            metricsState.loser = user2.Name;
+            var metricsState = new MetricsState
+            {
+                gamename = gamename,
+                turns = turn,
+                winner = user1.Name,
+                winnerAvgTime = user1 == _player ? playerTotalTime / Math.Max(1, playerMoveCount) : botTotalTime / Math.Max(1, botMoveCount),
+                loser = user2.Name,
+                loserAvgTime = user2 == _player ? playerTotalTime / Math.Max(1, playerMoveCount) : botTotalTime / Math.Max(1, botMoveCount)
+            };
             allGameResults.Add(metricsState);
-            p1_win++;
-            onewin.text = $"Wins: {p1_win}";
+
+            if (user1 == _player)
+            {
+                p1_win++;
+                _winsOne.text = $"Wins: {p1_win}";
+            }
+            else if (user1 == _bot)
+            {
+                p2_win++;
+                _winsTwo.text = $"Wins: {p2_win}";
+            }
+
             return true;
         }
+
         return false;
     }
+
 
     [System.Serializable]
     public class MetricsState
@@ -530,7 +608,9 @@ public class GameBot : MonoBehaviour
         public string gamename;
         public int turns;
         public string winner;
+        public double winnerAvgTime;
         public string loser;
+        public double loserAvgTime;
     }
 
     public void SaveAllResultsToFile()
@@ -621,19 +701,37 @@ public class GameBot : MonoBehaviour
     {
         if (_placedCard != null && _placedCardUser != null && _placedCard.TypeOfCard == TypeOfCard.Attack)
         {
-            if (user.ManaPoints < card.ManaCost)
+            if (GameSettings.UseManaSystem && user.ManaPoints < card.ManaCost)
             {
                 Debug.Log("Not enough mana for this card.");
                 return;
             }
 
-            user.ManaPoints -= card.ManaCost;
+            if (GameSettings.UseManaSystem)
+            {
+                user.ManaPoints -= card.ManaCost;
+            }
+
             user.UserDeck.Remove(card);
+
+            if (GameSettings.UseHiddenDecks)
+            {
+                _playedCards.Add(card);
+
+                if (user == _player)
+                    _remainingDeckForBot.Remove(card);
+                else if (user == _bot)
+                    _remainingDeckForPlayer.Remove(card);
+            }
 
             int attack = CombatUtils.GetEffectiveAttack(_placedCard.Damage, _placedCardUser.ActiveBuffs);
             int defense = CombatUtils.GetEffectiveDefense(card.Defense, user.ActiveBuffs);
             int netDamage = CombatUtils.CalculateNetDamage(attack, defense);
             user.HealthPoints -= netDamage;
+        }
+        else
+        {
+            Debug.LogWarning($"No attack to counter for {user.Name} with {card?.Name ?? "null"}");
         }
 
         _placedCard = null;

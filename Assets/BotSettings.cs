@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using static UnityEditor.Rendering.CameraUI;
 
 public class BotSettings : MonoBehaviour
 {
@@ -14,6 +11,10 @@ public class BotSettings : MonoBehaviour
 
     public TMP_Dropdown dropdownAlgOne;
     public TMP_Dropdown dropdownAlgTwo;
+
+    public Toggle toggleMana;
+    public Toggle toggleBuffDebuff;
+    public Toggle toggleHidden;
 
     public void PlayBotVsBotGame()
     {
@@ -39,6 +40,22 @@ public class BotSettings : MonoBehaviour
         int _algorithmTwo = PlayerPrefs.GetInt("AlgorithmusZweiBotVsBot", 1);
         dropdownAlgTwo.value = _algorithmTwo;
         dropdownAlgTwo.onValueChanged.AddListener(HandleAlgoDataTwo);
+
+        // Load toggle states
+        toggleMana.isOn = PlayerPrefs.GetInt("ToggleManaState", 0) == 1;
+        toggleBuffDebuff.isOn = PlayerPrefs.GetInt("ToggleBuffDebuffState", 0) == 1;
+        toggleHidden.isOn = PlayerPrefs.GetInt("Deck", 0) == 1;
+
+        // Add listeners to save state when toggled
+        toggleMana.onValueChanged.AddListener((value) => SaveToggleState("ToggleManaState", value));
+        toggleBuffDebuff.onValueChanged.AddListener((value) => SaveToggleState("ToggleBuffDebuffState", value));
+        toggleHidden.onValueChanged.AddListener((value) => SaveToggleState("Deck", value));
+    }
+
+    private void SaveToggleState(string key, bool value)
+    {
+        PlayerPrefs.SetInt(key, value ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     public void HandleAlgoDataOne(int value)
