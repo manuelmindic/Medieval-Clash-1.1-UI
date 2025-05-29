@@ -108,6 +108,7 @@ public class MCTS
             else if (phase == Phase.BotCounter || phase == Phase.PlayerCounter)
             {
                 lastAttackCard = null;
+                sim.AdvanceTurn();
             }
 
             phase = NextPhase(phase);

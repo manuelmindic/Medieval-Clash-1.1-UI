@@ -134,6 +134,12 @@ public class Minimax
                     newState = ResolveState(newState, "player", sampledCard);
 
                 int eval = Minimaxv1(newState, depth - 1, NextPhase(phase));
+
+                if (phase == Phase.PlayerCounter)
+                {
+                    newState.AdvanceTurn();  // Advance turn after counter phase
+                }
+
                 minEval = Math.Min(minEval, eval);
             }
 
@@ -165,6 +171,12 @@ public class Minimax
                 }
 
                 int eval = Minimaxv1(newState, depth - 1, NextPhase(phase));
+
+                if (phase == Phase.PlayerCounter || phase == Phase.BotCounter)
+                {
+                    newState.AdvanceTurn();  // Advance turn after counter phase
+                }
+
                 maxEval = Math.Max(maxEval, eval);
             }
             return maxEval;
